@@ -211,11 +211,12 @@ The final production model uses:
 # Final Model Performance
 
 | Metric | Score |
-|---------|--------|
-| Accuracy | XX |
-| Precision | XX |
-| Recall | XX |
-| F1 Score | XX |
+|--------|--------|
+| Accuracy | 82% |
+| Precision | 82% |
+| Recall | 93% |
+| F1 Score | 87% |
+| Macro f1 | 80% |
 
 > Update the above metrics with your final scores.
 
