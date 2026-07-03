@@ -1,5 +1,13 @@
+import Hero from '../components/home/Hero.jsx'
+import FeatureHighlights from '../components/home/FeatureHighlights.jsx'
+
 function Home() {
-  return <h1>Home</h1>;
+  return (
+    <>
+      <Hero />
+      <FeatureHighlights />
+    </>
+  )
 }
 
-export default Home;
+export default Home

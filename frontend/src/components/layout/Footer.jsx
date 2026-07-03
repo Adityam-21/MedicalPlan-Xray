@@ -42,15 +42,20 @@ function Footer() {
 
                     <div className="flex items-center gap-3">
                         {SOCIAL_LINKS.map((social) => (
-                            <a>
+                            <a
                                 key={social.label}
                                 href={social.href}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                aria - label= {social.label}
-                                className = "inline-flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-700"
+                                aria-label={social.label}
+                                className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-700"
+                            >
                                 <svg
-                                    className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                    className="h-5 w-5"
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                    aria-hidden="true"
+                                >
                                     {social.icon}
                                 </svg>
                             </a>
