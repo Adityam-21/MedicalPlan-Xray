@@ -1,335 +1,292 @@
 # MedicalPlan-Xray
+
 ### End-to-End Machine Learning System for Medical Insurance Plan Recommendation
 
 ![Python](https://img.shields.io/badge/Python-3.12-blue)
-![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-ML-orange)
-![XGBoost](https://img.shields.io/badge/XGBoost-GradientBoosting-green)
 ![FastAPI](https://img.shields.io/badge/FastAPI-API-teal)
-![Status](https://img.shields.io/badge/Status-Completed-success)
+![XGBoost](https://img.shields.io/badge/XGBoost-Classifier-green)
+![Status](https://img.shields.io/badge/Status-Production--Ready-success)
+![Tests](https://img.shields.io/badge/Tests-2%20Passing-success)
 
----
+------------------------------------------------------------------------
 
-# Overview
+## Overview
 
-MedicalPlan-Xray is an end-to-end Machine Learning project that predicts the most suitable medical insurance plan for a customer based on demographic, financial, and lifestyle information.
+MedicalPlan-Xray is an end-to-end machine learning project that
+recommends an appropriate medical insurance plan (Low, Medium or High)
+using demographic, financial and lifestyle information.
 
-The project simulates a real-world insurance recommendation system where customer information is processed through a complete ML pipeline to recommend one of the following plans:
+The project demonstrates a complete ML lifecycle, from data preparation
+and feature engineering to model training, a production-style FastAPI
+backend, prediction logging with Supabase, automated validation and
+reproducible deployment.
 
-- 🟢 Low Plan
-- 🟡 Medium Plan
-- 🔴 High Plan
+## Features
 
-The project covers the entire machine learning lifecycle:
+-   XGBoost + SMOTE classification pipeline
+-   Serialized preprocessing + model in a single artifact
+-   Feature engineering at inference
+-   FastAPI REST API
+-   Supabase prediction logging
+-   Pydantic request validation
+-   Out-of-distribution warnings
+-   Reproducible environment with pinned dependencies
+-   Unit tests with pytest
 
-- Data Cleaning
-- Exploratory Data Analysis
-- Feature Engineering
-- Data Preprocessing
-- Model Training
-- Hyperparameter Tuning
-- Prediction Pipeline
-- Deployment Preparation
+------------------------------------------------------------------------
 
----
+## Business Problem
 
-# Business Problem
+Insurance providers often need to recommend plans consistently and
+quickly. This project automates that decision using historical customer
+information while exposing predictions through an API suitable for
+integration into other applications.
 
-Insurance companies often need to recommend suitable medical plans to customers based on multiple factors such as:
+------------------------------------------------------------------------
 
-- Age
-- Income
-- Occupation Risk
-- Smoking Habits
-- Family Size
-- Expenditure Patterns
+## Dataset
 
-Manual recommendations can be:
+  Property                                     Value
+  --------------------- ----------------------------
+  Records                                        980
+  Target Classes                                   3
+  Original Features                               11
+  Engineered Features                              4
+  Problem Type            Multi-class Classification
 
-- Inconsistent
-- Time-consuming
-- Subjective
+Target classes:
 
-The objective of this project is to build a machine learning system capable of automatically recommending an appropriate medical insurance plan with high accuracy.
+-   Low
+-   Medium
+-   High
 
----
+------------------------------------------------------------------------
 
-# Dataset Information
+## Repository Structure
 
-| Property | Value |
-|----------|--------|
-| Number of Records | 980 |
-| Target Classes | 3 |
-| Features | 11 Original + 4 Engineered |
-| Problem Type | Multi-Class Classification |
-
-### Target Variable
-
-```text
-Low
-Medium
-High
-```
-
----
-
-# Project Structure
-
-```text
+``` text
 MedicalPlan-Xray/
-│
-├── app/
+├── backend/
+│   └── app/
 ├── data/
-│   ├── raw/
-│   ├── interim/
-│   └── processed/
-│
+├── docs/
+├── frontend/
 ├── models/
-│   ├── insurance_model.pkl
-│   ├── class_mapping.pkl
-│   ├── model_metrics.pkl
-│   └── model_card.md
-│
 ├── notebooks/
-│   ├── 01_data_loading.ipynb
-│   ├── 02_cleaning.ipynb
-│   ├── 03_eda.ipynb
-│   ├── 04_feature_engineering.ipynb
-│   ├── 05_modeling.ipynb
-│   ├── 06_feature_importance_and_interpretability.ipynb
-│   ├── 07_model_optimization.ipynb
-│   └── 08_final_pipeline_and_deployment.ipynb
-│
 ├── src/
-│   ├── __init__.py
-│   ├── config.py
-│   ├── feature_engineering.py
-│   ├── predict.py
-│   └── train.py
-│
 ├── tests/
-│   ├── test_prediction.py
-│   └── test_db.py
-│
 ├── visuals/
-├── requirements.txt
+├── .env.example
 ├── README.md
-└── .gitignore
+└── requirements.txt
 ```
 
----
+------------------------------------------------------------------------
 
-# Machine Learning Workflow
+## Machine Learning Workflow
 
-```text
-Data Loading
-      ↓
-Data Cleaning
-      ↓
-Exploratory Data Analysis
-      ↓
+1.  Data Cleaning
+2.  Exploratory Data Analysis
+3.  Feature Engineering
+4.  Data Preprocessing
+5.  Model Training
+6.  Hyperparameter Tuning
+7.  Model Selection
+8.  FastAPI Integration
+9.  Prediction Logging
+
+------------------------------------------------------------------------
+
+## Feature Engineering
+
+Engineered features include:
+
+-   Expense Ratio
+-   Savings
+-   Income per Family Member
+-   Expenditure per Family Member
+
+------------------------------------------------------------------------
+
+## Model
+
+The deployed model is an **XGBoost classifier** trained inside an
+**imbalanced-learn Pipeline** containing:
+
+-   ColumnTransformer
+-   StandardScaler
+-   OneHotEncoder
+-   SMOTE
+-   XGBoost Classifier
+
+This ensures training and inference use identical preprocessing.
+
+------------------------------------------------------------------------
+
+## Backend Architecture
+
+``` text
+Client
+  │
+FastAPI
+  │
+Prediction Service
+  │
 Feature Engineering
-      ↓
-Preprocessing Pipeline
-      ↓
-Model Training
-      ↓
-Hyperparameter Tuning
-      ↓
-Prediction Pipeline
-      ↓
-Deployment
+  │
+Serialized Pipeline
+  │
+Prediction
+  │
+Supabase Logging (non-blocking)
 ```
 
----
+------------------------------------------------------------------------
 
-# Exploratory Data Analysis Highlights
+## API
 
-Some major findings from the dataset:
+### POST /predict
 
-- Smokers tend to opt for higher medical plans.
-- High-risk occupations show greater preference for higher coverage.
-- Customers with larger family sizes prefer higher plans.
-- Higher expenditure generally correlates with higher insurance plans.
-- State tiers and salary brackets influence plan selection.
+Returns:
 
----
-
-# Feature Engineering
-
-The following features were engineered:
-
-### Expense Ratio
-
-```python
-annual_expenditure_inr / total_income_inr
-```
-
-### Savings
-
-```python
-total_income_inr - annual_expenditure_inr
-```
-
-### Income Per Member
-
-```python
-total_income_inr / family_members
-```
-
-### Expenditure Per Member
-
-```python
-annual_expenditure_inr / family_members
-```
-
----
-
-# Models Evaluated
-
-- Logistic Regression
-- Decision Tree
-- Random Forest
-- XGBoost
-- SMOTE Pipelines
-
----
-
-# Final Model
-
-### XGBoost + SMOTE Pipeline
-
-The final production model uses:
-
-- ColumnTransformer
-- StandardScaler
-- OneHotEncoder
-- XGBoost Classifier
-- SMOTE for class balancing
-
----
-
-# Final Model Performance
-
-| Metric | Score |
-|--------|--------|
-| Accuracy | 82% |
-| Precision | 82% |
-| Recall | 93% |
-| F1 Score | 87% |
-| Macro f1 | 80% |
-
-> Update the above metrics with your final scores.
-
----
-
-# Prediction Pipeline
-
-The prediction pipeline performs:
-
-1. Input Validation
-2. Out-of-Distribution Detection
-3. Feature Engineering
-4. Preprocessing
-5. Prediction
-6. Probability Generation
+-   Recommended plan
+-   Confidence
+-   Class probabilities
+-   Model metadata
 
 Example response:
 
-```json
+``` json
 {
-  "prediction": "High",
-  "probabilities": {
-    "Low": 0.1185,
-    "Medium": 0.1307,
-    "High": 0.7508
+  "status": "success",
+  "prediction": {
+    "recommended_plan": "Medium",
+    "confidence": 89.62
   }
 }
 ```
 
----
+------------------------------------------------------------------------
 
-# Tech Stack
+## Installation
 
-### Programming
-
-- Python
-
-### Data Analysis
-
-- Pandas
-- NumPy
-
-### Visualization
-
-- Matplotlib
-- Seaborn
-
-### Machine Learning
-
-- Scikit-Learn
-- XGBoost
-- Imbalanced-Learn
-
-### Deployment
-
-- FastAPI
-- Docker
-
-### Database
-
-- Supabase PostgreSQL
-
----
-
-# Installation
-
-Clone the repository:
-
-```bash
+``` bash
 git clone https://github.com/Adityam-21/MedicalPlan-Xray.git
 cd MedicalPlan-Xray
-```
 
-Install dependencies:
+python -m venv venv
 
-```bash
+# Windows
+venv\Scripts\activate
+
 pip install -r requirements.txt
 ```
 
----
+Copy the example environment file:
 
-# Running the Project
-
-```bash
-jupyter notebook
+``` bash
+cp .env.example .env
 ```
 
-For API deployment:
+Populate:
 
-```bash
-uvicorn app.main:app --reload
+-   SUPABASE_URL
+-   SUPABASE_KEY
+
+Run the API:
+
+``` bash
+python -m uvicorn backend.app.main:app --reload
 ```
 
----
+Swagger:
 
-# Future Improvements
+    http://127.0.0.1:8000/docs
 
-- Model Monitoring
-- Data Drift Detection
-- CI/CD Pipeline
-- Cloud Deployment
-- Automated Retraining
-- User Interface for Predictions
+------------------------------------------------------------------------
 
----
+## Running Tests
 
-# Author
+``` bash
+python -m pytest
+```
 
-### Kumar Adityam
-B.Tech Information Technology  
-Machine Learning Engineer | Backend Developer
+Current status:
 
-- GitHub: https://github.com/Adityam-21
-- LinkedIn: https://linkedin.com/in/kumar-adityam-4b2b7b1b4
+    2 passed
 
----
+------------------------------------------------------------------------
+
+## Technology Stack
+
+-   Python
+-   Pandas
+-   NumPy
+-   Scikit-learn
+-   Imbalanced-Learn
+-   XGBoost
+-   FastAPI
+-   Supabase
+-   SQLAlchemy
+-   Pytest
+
+------------------------------------------------------------------------
+
+# 📸 Application Preview
+
+A quick overview of the **MedicalPlan-Xray** web application and its FastAPI backend.
+
+| 🏠 Home | 📝 Prediction |
+|:--------:|:-------------:|
+| ![Home](visuals/home.png) | ![Prediction](visuals/predict.png) |
+
+| 🤖 Prediction Result | ℹ️ About |
+|:--------------------:|:--------:|
+| ![Prediction Result](visuals/prediction-result.png) | ![About](visuals/about.png) |
+
+### ⚡ Interactive API Documentation
+
+Explore and test the REST API directly through the automatically generated Swagger UI.
+
+| API Overview | Prediction Endpoint |
+|:------------:|:------------------:|
+| ![Swagger UI](visuals/swagger-api.png) | ![Prediction Endpoint](visuals/swagger-api-prediction.png) |
+
+------------------------------------------------------------------------
+
+## Current Limitations
+
+-   Local deployment only
+-   No CI/CD pipeline yet
+-   No authentication
+-   Monitoring not yet implemented
+
+------------------------------------------------------------------------
+
+## Future Roadmap
+
+-   Docker support
+-   Cloud deployment
+-   CI/CD
+-   Model monitoring
+-   Drift detection
+-   Retraining pipeline
+-   Authentication
+-   Dashboard analytics
+
+------------------------------------------------------------------------
+
+## Author
+
+**Kumar Adityam**
+
+Machine Learning Engineer • Backend Developer
+
+-   GitHub: https://github.com/Adityam-21
+-   LinkedIn: https://linkedin.com/in/kumar-adityam-4b2b7b1b4
+
+------------------------------------------------------------------------
+
+## License
+
+This project is released under the MIT License.

@@ -1,82 +1,49 @@
-import { cn } from '../../utils/cn.js'
-import Spinner from './Spinner.jsx'
+import { cn } from "../../utils/cn.js";
 
-const VARIANTS = {
-  primary:
-    'bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800 shadow-soft',
-  secondary:
-    'bg-accent-500 text-white hover:bg-accent-600 active:bg-accent-700 shadow-soft',
-  outline:
-    'bg-white text-primary-700 border border-primary-200 hover:bg-primary-50 active:bg-primary-100',
-  ghost:
-    'bg-transparent text-gray-700 hover:bg-gray-100 active:bg-gray-200',
-}
-
-const SIZES = {
-  sm: 'h-9 px-3 text-sm gap-1.5',
-  md: 'h-11 px-5 text-sm gap-2',
-  lg: 'h-12 px-6 text-base gap-2',
-}
-
-/**
- * Single reusable button covering every visual state via props:
- *   <Button variant="primary" />
- *   <Button variant="secondary" />
- *   <Button variant="outline" />
- *   <Button variant="ghost" />
- *   <Button variant="primary" isLoading />
- *   <Button variant="primary" disabled />
- *
- * Deliberately not split into PrimaryButton/SecondaryButton/etc. — the
- * markup and behavior are identical, only the styling varies.
- *
- * Polymorphic via `as` so a CTA can render as a router Link/anchor while
- * keeping identical styling, e.g. <Button as={Link} to="/predict" />.
- * Defaults to a native <button>.
- */
 function Button({
-  as: Component = 'button',
-  variant = 'primary',
-  size = 'md',
+  type = "button",
+  children,
   isLoading = false,
   disabled = false,
   fullWidth = false,
-  type = 'button',
-  leftIcon = null,
-  rightIcon = null,
-  className = '',
-  children,
-  ...rest
+  className = "",
+  ...props
 }) {
-  const isDisabled = disabled || isLoading
-  // Native-button-only attributes — irrelevant/invalid on Link/anchor.
-  const buttonOnlyProps = Component === 'button' ? { type, disabled: isDisabled } : {}
-
   return (
-    <Component
-      aria-busy={isLoading}
-      aria-disabled={isDisabled}
+    <button
+      type={type}
+      disabled={disabled || isLoading}
       className={cn(
-        'inline-flex items-center justify-center rounded-lg font-medium',
-        'transition-colors duration-150 focus:outline-none focus-visible:shadow-focus',
-        'disabled:cursor-not-allowed disabled:opacity-50',
-        VARIANTS[variant],
-        SIZES[size],
-        fullWidth && 'w-full',
-        className,
+        "flex h-12 items-center justify-center rounded-xl",
+        "bg-gradient-to-r from-blue-600 to-indigo-600",
+        "px-6 font-semibold text-white",
+        "shadow-md",
+        "transition-all duration-300 ease-out",
+        "hover:-translate-y-0.5",
+        "hover:scale-[1.015]",
+        "hover:from-blue-700 hover:to-indigo-700",
+        "hover:shadow-xl",
+        "active:scale-[0.98]",
+        "disabled:cursor-not-allowed",
+        "disabled:opacity-60",
+        "disabled:hover:translate-y-0",
+        "disabled:hover:scale-100",
+        "disabled:hover:shadow-md",
+        fullWidth && "w-full",
+        className
       )}
-      {...buttonOnlyProps}
-      {...rest}
+      {...props}
     >
       {isLoading ? (
-        <Spinner size={size === 'lg' ? 'md' : 'sm'} label="Loading" />
+        <div className="flex items-center gap-3">
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/40 border-t-white"></div>
+          <span>Generating Recommendation...</span>
+        </div>
       ) : (
-        leftIcon
+        children
       )}
-      {children}
-      {!isLoading && rightIcon}
-    </Component>
-  )
+    </button>
+  );
 }
 
-export default Button
+export default Button;

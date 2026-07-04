@@ -1,3 +1,5 @@
+import traceback
+
 from fastapi import APIRouter
 
 from backend.app.schemas import PredictionRequest
@@ -19,21 +21,21 @@ def predict(request: PredictionRequest):
         customer_data = request.model_dump()
 
         result = predict_medical_plan(customer_data)
-        
+
         confidence = max(result["probabilities"].values()) * 100
 
         prediction_record = {
-        **customer_data,
-        "predicted_plan": result["predicted_plan"],
-        "confidence": round(confidence, 2)
+            **customer_data,
+            "predicted_plan": result["prediction"],
+            "confidence": round(confidence, 2),
         }
-        
+
         log_prediction(prediction_record)
-        
+
         return {
             "status": "success",
             "prediction": {
-                "recommended_plan": result["predicted_plan"],
+                "recommended_plan": result["prediction"],
                 "confidence": round(confidence, 2),
                 "probabilities": {
                     key: round(value * 100, 2)
@@ -43,7 +45,8 @@ def predict(request: PredictionRequest):
             "metadata": {"model_name": MODEL_NAME, "model_version": MODEL_VERSION},
         }
 
-    except Exception as e:
+    except Exception:
         raise HTTPException(
-            status_code=500, detail="Internal server error while generating prediction."
-        )
+        status_code=500,
+        detail="Internal server error while generating prediction."
+    )

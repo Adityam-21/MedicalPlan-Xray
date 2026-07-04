@@ -1,5 +1,7 @@
 from supabase import create_client, Client
 
+import logging
+
 from backend.app.config import (
     SUPABASE_URL,
     SUPABASE_KEY
@@ -10,12 +12,19 @@ supabase = create_client(
     SUPABASE_KEY
 )
 
-def log_prediction(data: dict):
-    response = (
-        supabase
-        .table("prediction_logs")
-        .insert(data)
-        .execute()
-    )
+logger = logging.getLogger(__name__)
 
-    return response
+
+def log_prediction(data: dict):
+    try:
+        response = (
+            supabase
+            .table("prediction_logs")
+            .insert(data)
+            .execute()
+        )
+        return response
+
+    except Exception as e:
+        logger.exception("Failed to log prediction to Supabase.")
+        return None
