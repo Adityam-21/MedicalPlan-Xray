@@ -2,7 +2,7 @@ from supabase import create_client, Client
 
 import logging
 
-from app.config import (
+from backend.app.config import (
     SUPABASE_URL,
     SUPABASE_KEY
 )
