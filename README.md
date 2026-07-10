@@ -21,17 +21,37 @@ and feature engineering to model training, a production-style FastAPI
 backend, prediction logging with Supabase, automated validation and
 reproducible deployment.
 
+------------------------------------------------------------------------
+
+## 🌐 Live Demo
+
+### Frontend
+
+https://medical-plan-xray.vercel.app
+
+### Backend API
+
+https://site--medicalplan-xray--z9wsmn2822p9.code.run
+
+### Interactive Swagger Documentation
+
+https://site--medicalplan-xray--z9wsmn2822p9.code.run/docs
+
+------------------------------------------------------------------------
+
 ## Features
 
--   XGBoost + SMOTE classification pipeline
--   Serialized preprocessing + model in a single artifact
--   Feature engineering at inference
--   FastAPI REST API
--   Supabase prediction logging
--   Pydantic request validation
--   Out-of-distribution warnings
--   Reproducible environment with pinned dependencies
--   Unit tests with pytest
+- XGBoost + SMOTE classification pipeline
+- Serialized preprocessing + model in a single artifact
+- Feature engineering at inference
+- FastAPI REST API
+- React frontend
+- Supabase prediction logging
+- Pydantic request validation
+- Out-of-distribution warnings
+- Production deployment
+- Reproducible environment with pinned dependencies
+- Unit tests with pytest
 
 ------------------------------------------------------------------------
 
@@ -46,37 +66,39 @@ integration into other applications.
 
 ## Dataset
 
-  Property                                     Value
-  --------------------- ----------------------------
-  Records                                        980
-  Target Classes                                   3
-  Original Features                               11
-  Engineered Features                              4
-  Problem Type            Multi-class Classification
+| Property | Value |
+|----------------------|----------------------------|
+| Records | 980 |
+| Target Classes | 3 |
+| Original Features | 11 |
+| Engineered Features | 4 |
+| Problem Type | Multi-class Classification |
 
 Target classes:
 
--   Low
--   Medium
--   High
+- Low
+- Medium
+- High
 
 ------------------------------------------------------------------------
 
 ## Repository Structure
 
-``` text
+```text
 MedicalPlan-Xray/
 ├── backend/
-│   └── app/
-├── data/
-├── docs/
+│   ├── app/
+│   └── requirements.txt
 ├── frontend/
 ├── models/
+├── data/
+├── docs/
 ├── notebooks/
 ├── src/
 ├── tests/
 ├── visuals/
 ├── .env.example
+├── LICENSE
 ├── README.md
 └── requirements.txt
 ```
@@ -85,15 +107,17 @@ MedicalPlan-Xray/
 
 ## Machine Learning Workflow
 
-1.  Data Cleaning
-2.  Exploratory Data Analysis
-3.  Feature Engineering
-4.  Data Preprocessing
-5.  Model Training
-6.  Hyperparameter Tuning
-7.  Model Selection
-8.  FastAPI Integration
-9.  Prediction Logging
+1. Data Cleaning
+2. Exploratory Data Analysis
+3. Feature Engineering
+4. Data Preprocessing
+5. Model Training
+6. Hyperparameter Tuning
+7. Model Selection
+8. FastAPI Integration
+9. Frontend Integration
+10. Cloud Deployment
+11. Prediction Logging
 
 ------------------------------------------------------------------------
 
@@ -101,10 +125,10 @@ MedicalPlan-Xray/
 
 Engineered features include:
 
--   Expense Ratio
--   Savings
--   Income per Family Member
--   Expenditure per Family Member
+- Expense Ratio
+- Savings
+- Income per Family Member
+- Expenditure per Family Member
 
 ------------------------------------------------------------------------
 
@@ -113,11 +137,11 @@ Engineered features include:
 The deployed model is an **XGBoost classifier** trained inside an
 **imbalanced-learn Pipeline** containing:
 
--   ColumnTransformer
--   StandardScaler
--   OneHotEncoder
--   SMOTE
--   XGBoost Classifier
+- ColumnTransformer
+- StandardScaler
+- OneHotEncoder
+- SMOTE
+- XGBoost Classifier
 
 This ensures training and inference use identical preprocessing.
 
@@ -125,21 +149,37 @@ This ensures training and inference use identical preprocessing.
 
 ## Backend Architecture
 
-``` text
-Client
-  │
-FastAPI
-  │
-Prediction Service
-  │
-Feature Engineering
-  │
-Serialized Pipeline
-  │
-Prediction
-  │
-Supabase Logging (non-blocking)
+```text
+React Frontend (Vercel)
+          │
+          ▼
+     FastAPI Backend
+      (Northflank)
+          │
+          ▼
+ Feature Engineering
+          │
+          ▼
+ Serialized Pipeline
+          │
+          ▼
+    Prediction Engine
+          │
+          ▼
+ Supabase Logging
 ```
+
+------------------------------------------------------------------------
+
+## Deployment
+
+| Component | Platform |
+|-----------|----------|
+| Frontend | Vercel |
+| Backend | Northflank |
+| Database | Supabase |
+| Model Serving | FastAPI |
+| API Documentation | Swagger UI |
 
 ------------------------------------------------------------------------
 
@@ -149,14 +189,14 @@ Supabase Logging (non-blocking)
 
 Returns:
 
--   Recommended plan
--   Confidence
--   Class probabilities
--   Model metadata
+- Recommended plan
+- Confidence
+- Class probabilities
+- Model metadata
 
 Example response:
 
-``` json
+```json
 {
   "status": "success",
   "prediction": {
@@ -170,7 +210,7 @@ Example response:
 
 ## Installation
 
-``` bash
+```bash
 git clone https://github.com/Adityam-21/MedicalPlan-Xray.git
 cd MedicalPlan-Xray
 
@@ -184,51 +224,60 @@ pip install -r requirements.txt
 
 Copy the example environment file:
 
-``` bash
+```bash
 cp .env.example .env
 ```
 
 Populate:
 
--   SUPABASE_URL
--   SUPABASE_KEY
+- SUPABASE_URL
+- SUPABASE_KEY
 
 Run the API:
 
-``` bash
+```bash
 python -m uvicorn backend.app.main:app --reload
 ```
 
 Swagger:
 
-    http://127.0.0.1:8000/docs
+```
+http://127.0.0.1:8000/docs
+```
 
 ------------------------------------------------------------------------
 
 ## Running Tests
 
-``` bash
+```bash
 python -m pytest
 ```
 
 Current status:
 
-    2 passed
+```
+2 passed
+```
 
 ------------------------------------------------------------------------
 
 ## Technology Stack
 
--   Python
--   Pandas
--   NumPy
--   Scikit-learn
--   Imbalanced-Learn
--   XGBoost
--   FastAPI
--   Supabase
--   SQLAlchemy
--   Pytest
+- Python
+- Pandas
+- NumPy
+- Scikit-learn
+- Imbalanced-Learn
+- XGBoost
+- FastAPI
+- React
+- Tailwind CSS
+- Axios
+- Supabase
+- SQLAlchemy
+- Pytest
+- Vercel
+- Northflank
 
 ------------------------------------------------------------------------
 
@@ -256,23 +305,23 @@ Explore and test the REST API directly through the automatically generated Swagg
 
 ## Current Limitations
 
--   Local deployment only
--   No CI/CD pipeline yet
--   No authentication
--   Monitoring not yet implemented
+- No authentication
+- No CI/CD pipeline
+- No model monitoring
+- No automated retraining pipeline
 
 ------------------------------------------------------------------------
 
 ## Future Roadmap
 
--   Docker support
--   Cloud deployment
--   CI/CD
--   Model monitoring
--   Drift detection
--   Retraining pipeline
--   Authentication
--   Dashboard analytics
+- Docker support
+- GitHub Actions CI/CD
+- Model monitoring
+- Drift detection
+- Automated retraining pipeline
+- Authentication & authorization
+- Dashboard analytics
+- Explainable AI (SHAP dashboard)
 
 ------------------------------------------------------------------------
 
@@ -282,8 +331,11 @@ Explore and test the REST API directly through the automatically generated Swagg
 
 Machine Learning Engineer • Backend Developer
 
--   GitHub: https://github.com/Adityam-21
--   LinkedIn: https://linkedin.com/in/kumar-adityam-4b2b7b1b4
+GitHub:
+https://github.com/Adityam-21
+
+LinkedIn:
+https://linkedin.com/in/kumar-adityam-4b2b7b1b4
 
 ------------------------------------------------------------------------
 
