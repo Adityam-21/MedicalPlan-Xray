@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 
-from backend.app.routes import router
+from app.routes import router
 
-from backend.app.config import API_TITLE, API_VERSION
+from app.config import API_TITLE, API_VERSION
 
 from fastapi.middleware.cors import CORSMiddleware
 
