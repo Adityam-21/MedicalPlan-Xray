@@ -2,14 +2,14 @@ import traceback
 
 from fastapi import APIRouter
 
-from backend.app.schemas import PredictionRequest
-from backend.app.predictor import predict_medical_plan
+from app.schemas import PredictionRequest
+from app.predictor import predict_medical_plan
 
 from fastapi import HTTPException
 
-from backend.app.config import MODEL_NAME, MODEL_VERSION
+from app.config import MODEL_NAME, MODEL_VERSION
 
-from backend.app.database import log_prediction
+from app.database import log_prediction
 
 router = APIRouter()
 
