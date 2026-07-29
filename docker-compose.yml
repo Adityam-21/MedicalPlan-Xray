@@ -1,0 +1,40 @@
+services:
+  backend:
+    build:
+      context: ./backend
+
+    container_name: medicalplan-backend
+
+    env_file:
+      - .env
+
+    ports:
+      - "8000:8000"
+
+    restart: unless-stopped
+
+    networks:
+      - medicalplan-network
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://backend:8000
+
+    container_name: medicalplan-frontend
+
+    ports:
+      - "3000:80"
+
+    depends_on:
+      - backend
+
+    restart: unless-stopped
+
+    networks:
+      - medicalplan-network
+
+networks:
+  medicalplan-network:
+    driver: bridge

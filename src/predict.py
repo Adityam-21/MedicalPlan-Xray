@@ -9,10 +9,9 @@ from src.feature_engineering import create_features
 # Load Artifacts:
 
 BASE_DIR = Path(__file__).resolve().parents[1]
-MODEL_DIR = BASE_DIR / "models"
+MODEL_DIR = BASE_DIR / "backend" / "models"
 
 model = joblib.load(MODEL_DIR / "insurance_model.pkl")
-
 class_mapping = joblib.load(MODEL_DIR / "class_mapping.pkl")
 
 # Predicition Function:
