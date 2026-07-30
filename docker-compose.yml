@@ -20,7 +20,7 @@ services:
     build:
       context: ./frontend
       args:
-        VITE_API_URL: http://backend:8000
+        VITE_API_URL: /api
 
     container_name: medicalplan-frontend
 

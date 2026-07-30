@@ -4,9 +4,11 @@
 
 ![Python](https://img.shields.io/badge/Python-3.12-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-API-teal)
+![React](https://img.shields.io/badge/React-Frontend-61DAFB)
+![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED)
 ![XGBoost](https://img.shields.io/badge/XGBoost-Classifier-green)
 ![Status](https://img.shields.io/badge/Status-Production--Ready-success)
-![Tests](https://img.shields.io/badge/Tests-2%20Passing-success)
+![Tests](https://img.shields.io/badge/Tests-Passing-success)
 
 ------------------------------------------------------------------------
 
@@ -20,6 +22,19 @@ The project demonstrates a complete ML lifecycle, from data preparation
 and feature engineering to model training, a production-style FastAPI
 backend, prediction logging with Supabase, automated validation and
 reproducible deployment.
+
+------------------------------------------------------------------------
+
+## 🚀 Production Highlights
+
+- End-to-end Machine Learning application for medical insurance recommendation
+- Production-ready FastAPI backend deployed on Northflank
+- Responsive React frontend deployed on Vercel
+- Dockerized full-stack deployment using Docker Compose
+- Serialized preprocessing and XGBoost pipeline for consistent inference
+- Real-time prediction API with confidence scores
+- Supabase integration for prediction logging
+- Feature-engineered inference pipeline with input validation
 
 ------------------------------------------------------------------------
 
@@ -41,17 +56,19 @@ https://site--medicalplan-xray--z9wsmn2822p9.code.run/docs
 
 ## Features
 
-- XGBoost + SMOTE classification pipeline
-- Serialized preprocessing + model in a single artifact
-- Feature engineering at inference
-- FastAPI REST API
-- React frontend
+- End-to-end XGBoost + SMOTE classification pipeline
+- Serialized preprocessing and trained model in a single artifact
+- Automated feature engineering during inference
+- Production-ready FastAPI REST API
+- Responsive React frontend with real-time predictions
+- Confidence scores and class probability visualization
 - Supabase prediction logging
 - Pydantic request validation
-- Out-of-distribution warnings
-- Production deployment
+- Out-of-distribution input warnings
+- Dockerized full-stack deployment
+- Cloud deployment using Vercel and Northflank
 - Reproducible environment with pinned dependencies
-- Unit tests with pytest
+- Unit testing with Pytest
 
 ------------------------------------------------------------------------
 
@@ -88,19 +105,22 @@ Target classes:
 MedicalPlan-Xray/
 ├── backend/
 │   ├── app/
-│   └── requirements.txt
+│   ├── models/
+│   ├── requirements.txt
+│   └── Dockerfile
 ├── frontend/
-├── models/
+│   ├── src/
+│   ├── nginx.conf
+│   ├── Dockerfile
+│   └── package.json
 ├── data/
-├── docs/
 ├── notebooks/
-├── src/
 ├── tests/
 ├── visuals/
 ├── .env.example
-├── LICENSE
+├── docker-compose.yml
 ├── README.md
-└── requirements.txt
+└── LICENSE
 ```
 
 ------------------------------------------------------------------------
@@ -147,23 +167,39 @@ This ensures training and inference use identical preprocessing.
 
 ------------------------------------------------------------------------
 
+## Model Performance
+
+The final production model uses an XGBoost classifier trained within an imbalanced-learn pipeline incorporating SMOTE for handling class imbalance.
+
+Key characteristics:
+
+- Multi-class classification
+- Engineered financial features
+- Serialized preprocessing pipeline
+- Consistent training and inference workflow
+- Probability-based recommendations
+
+------------------------------------------------------------------------
+
 ## Backend Architecture
 
 ```text
 React Frontend (Vercel)
           │
           ▼
-     FastAPI Backend
-      (Northflank)
+     Nginx Reverse Proxy
+          │
+          ▼
+ FastAPI Backend (Northflank)
           │
           ▼
  Feature Engineering
           │
           ▼
- Serialized Pipeline
+ Serialized ML Pipeline
           │
           ▼
-    Prediction Engine
+ Prediction Engine
           │
           ▼
  Supabase Logging
@@ -173,13 +209,15 @@ React Frontend (Vercel)
 
 ## Deployment
 
-| Component | Platform |
-|-----------|----------|
-| Frontend | Vercel |
-| Backend | Northflank |
-| Database | Supabase |
-| Model Serving | FastAPI |
-| API Documentation | Swagger UI |
+| Component         | Technology              |
+| ----------------- | ----------------------- |
+| Frontend          | React + Vercel          |
+| Backend           | FastAPI + Northflank    |
+| Containerization  | Docker + Docker Compose |
+| Reverse Proxy     | Nginx                   |
+| Database          | Supabase                |
+| Model             | XGBoost + SMOTE         |
+| API Documentation | Swagger UI              |
 
 ------------------------------------------------------------------------
 
@@ -210,15 +248,58 @@ Example response:
 
 ## Installation
 
+Clone the repository:
+
 ```bash
 git clone https://github.com/Adityam-21/MedicalPlan-Xray.git
 cd MedicalPlan-Xray
+```
 
+### Option 1 — Docker (Recommended)
+
+1. Copy the example environment file:
+
+```bash
+cp .env.example .env
+```
+
+2. Add your Supabase credentials to `.env`:
+
+```text
+SUPABASE_URL=your_supabase_url
+SUPABASE_KEY=your_supabase_key
+```
+
+3. Build and start the application:
+
+```bash
+docker compose up --build
+```
+
+The application will be available at:
+
+| Service | URL |
+|---------|-----|
+| Frontend | http://localhost:3000 |
+| Backend API | http://localhost:8000 |
+| Swagger Documentation | http://localhost:8000/docs |
+
+---
+
+### Option 2 — Manual Setup
+
+Create and activate a virtual environment:
+
+```bash
 python -m venv venv
 
 # Windows
 venv\Scripts\activate
+```
 
+Install the required dependencies:
+
+```bash
 pip install -r requirements.txt
 ```
 
@@ -228,100 +309,146 @@ Copy the example environment file:
 cp .env.example .env
 ```
 
-Populate:
+Add your Supabase credentials to `.env`:
 
-- SUPABASE_URL
-- SUPABASE_KEY
+```text
+SUPABASE_URL=your_supabase_url
+SUPABASE_KEY=your_supabase_key
+```
 
-Run the API:
+Run the FastAPI application:
 
 ```bash
 python -m uvicorn backend.app.main:app --reload
 ```
 
-Swagger:
+The application will be available at:
 
-```
-http://127.0.0.1:8000/docs
-```
+| Service | URL |
+|---------|-----|
+| Backend API | http://127.0.0.1:8000 |
+| Swagger Documentation | http://127.0.0.1:8000/docs |
 
 ------------------------------------------------------------------------
 
 ## Running Tests
 
+Run the test suite:
+
 ```bash
 python -m pytest
 ```
 
-Current status:
+Current Status
 
-```
-2 passed
+```text
+2 tests passed
 ```
 
 ------------------------------------------------------------------------
 
 ## Technology Stack
 
-- Python
-- Pandas
-- NumPy
+### Machine Learning
+
+- XGBoost
 - Scikit-learn
 - Imbalanced-Learn
-- XGBoost
+- Pandas
+- NumPy
+
+### Backend
+
 - FastAPI
+- Pydantic
+- SQLAlchemy
+
+### Frontend
+
 - React
 - Tailwind CSS
 - Axios
+
+### Database
+
 - Supabase
-- SQLAlchemy
-- Pytest
-- Vercel
+
+### DevOps
+
+- Docker
+- Docker Compose
+- Nginx
 - Northflank
+- Vercel
+
+### Testing
+
+- Pytest
 
 ------------------------------------------------------------------------
 
 # 📸 Application Preview
 
-A quick overview of the **MedicalPlan-Xray** web application and its FastAPI backend.
+Explore the production-ready interface of **MedicalPlan-Xray**, including the user workflow from customer input to AI-powered insurance plan recommendations.
+
+---
+
+## 🖥️ Web Application
 
 | 🏠 Home | 📝 Prediction |
 |:--------:|:-------------:|
-| ![Home](visuals/home.png) | ![Prediction](visuals/predict.png) |
+| ![Home](visuals/home.png) | ![Prediction Page](visuals/predict.png) |
 
-| 🤖 Prediction Result | ℹ️ About |
-|:--------------------:|:--------:|
+| 🤖 AI Recommendation | ℹ️ About |
+|:-------------------:|:--------:|
 | ![Prediction Result](visuals/prediction-result.png) | ![About](visuals/about.png) |
 
-### ⚡ Interactive API Documentation
+---
 
-Explore and test the REST API directly through the automatically generated Swagger UI.
+## ⚡ API Documentation (Swagger UI)
 
-| API Overview | Prediction Endpoint |
-|:------------:|:------------------:|
+The FastAPI backend automatically generates interactive API documentation for testing and exploring endpoints without additional tools.
+
+| 📋 API Overview | 🚀 Prediction Endpoint |
+|:--------------:|:----------------------:|
 | ![Swagger UI](visuals/swagger-api.png) | ![Prediction Endpoint](visuals/swagger-api-prediction.png) |
+
+---
+
+## 📱 Key Capabilities Demonstrated
+
+- Responsive React frontend
+- Real-time insurance plan prediction
+- Confidence score visualization
+- Multi-class probability distribution
+- Interactive Swagger API documentation
+- Production-ready FastAPI backend
 
 ------------------------------------------------------------------------
 
 ## Current Limitations
 
-- No authentication
-- No CI/CD pipeline
-- No model monitoring
-- No automated retraining pipeline
+While the application is fully functional and deployed in production, the current version has a few engineering limitations that would typically be addressed in a larger scale production environment.
+
+- Authentication and role-based access control are not implemented.
+- CI/CD pipelines for automated testing and deployment are not yet configured.
+- Model performance and prediction monitoring are not available.
+- Automated model retraining and data drift detection are not implemented.
+- The system currently supports single record inference only (no batch prediction endpoint).
+- Prediction history analytics and operational dashboards are not included.
 
 ------------------------------------------------------------------------
 
 ## Future Roadmap
 
-- Docker support
 - GitHub Actions CI/CD
-- Model monitoring
-- Drift detection
+- Model monitoring and observability
+- Data drift detection
 - Automated retraining pipeline
 - Authentication & authorization
 - Dashboard analytics
-- Explainable AI (SHAP dashboard)
+- SHAP-based explainability dashboard
+- Batch prediction endpoint
 
 ------------------------------------------------------------------------
 
