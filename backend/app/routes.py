@@ -21,7 +21,7 @@ def health():
 def predict(request: PredictionRequest):
 
     try:
-        customer_data = request.model_dump()
+        customer_data = request.model_dump(exclude={"salary_bracket"})
 
         result = predict_medical_plan(customer_data)
 
@@ -37,6 +37,7 @@ def predict(request: PredictionRequest):
     # Logging must never break a prediction; log_prediction handles its own errors.
     log_prediction({
         **customer_data,
+        "salary_bracket": result["derived"]["salary_bracket"],
         "predicted_plan": result["prediction"],
         "confidence": confidence,
     })
@@ -52,5 +53,6 @@ def predict(request: PredictionRequest):
             },
         },
         "warnings": result["warnings"],
+        "derived": result["derived"],
         "metadata": {"model_name": MODEL_NAME, "model_version": MODEL_VERSION},
     }

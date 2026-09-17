@@ -1,5 +1,6 @@
+from typing import Literal, Optional
+
 from pydantic import BaseModel, Field
-from typing import Literal
 
 
 class PredictionRequest(BaseModel):
@@ -10,21 +11,27 @@ class PredictionRequest(BaseModel):
     state_tier: Literal[
         "Tier-1",
         "Tier-2",
-        "Tier-3"
+        "Tier-3",
     ]
 
     occupation_class: Literal[
         "Low-Risk",
         "Medium-Risk",
-        "High-Risk"
+        "High-Risk",
     ]
 
-    salary_bracket: Literal[
+    # Deprecated: the API derives the bracket from total_income_inr.
+    # Still accepted (and validated) so older clients keep working, but ignored.
+    salary_bracket: Optional[Literal[
         "Tier-1",
         "Tier-2",
         "Tier-3",
-        "Tier-4"
-    ]
+        "Tier-4",
+    ]] = Field(
+        default=None,
+        deprecated=True,
+        description="Deprecated and ignored; derived from total_income_inr.",
+    )
 
     total_income_inr: float = Field(..., gt=0)
 

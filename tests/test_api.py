@@ -86,6 +86,7 @@ def test_predict_returns_expected_plan(client, name, expected, customer):
     assert math.isclose(pred["confidence"], max(probs.values()), abs_tol=0.01)
     assert set(body["metadata"]) == {"model_name", "model_version"}
     assert body["warnings"] == []
+    assert body["derived"]["salary_bracket"] == customer["salary_bracket"]
 
 
 def test_predict_logs_one_record(client):
@@ -115,3 +116,28 @@ def test_missing_field_is_rejected(client):
     _, _, customer = KNOWN_CASES[0]
     incomplete = {k: v for k, v in customer.items() if k != "age"}
     assert client.post("/predict", json=incomplete).status_code == 422
+
+
+@pytest.mark.parametrize("name,expected,customer", KNOWN_CASES, ids=CASE_IDS)
+def test_predict_works_without_salary_bracket(client, name, expected, customer):
+    payload = {k: v for k, v in customer.items() if k != "salary_bracket"}
+    response = client.post("/predict", json=payload)
+    assert response.status_code == 200
+    assert response.json()["prediction"]["recommended_plan"] == expected
+
+
+def test_supplied_bracket_is_ignored_by_api(client):
+    _, _, customer = KNOWN_CASES[0]
+    without = {k: v for k, v in customer.items() if k != "salary_bracket"}
+    with_wrong = {**without, "salary_bracket": "Tier-4"}
+    a = client.post("/predict", json=without).json()
+    b = client.post("/predict", json=with_wrong).json()
+    assert a["prediction"] == b["prediction"]
+    assert b["derived"]["salary_bracket"] == customer["salary_bracket"]
+
+
+def test_log_record_uses_derived_bracket(client):
+    _, _, customer = KNOWN_CASES[0]
+    payload = {k: v for k, v in customer.items() if k != "salary_bracket"}
+    client.post("/predict", json=payload)
+    assert client.logged[-1]["salary_bracket"] == customer["salary_bracket"]

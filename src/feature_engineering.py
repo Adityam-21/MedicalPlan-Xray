@@ -1,27 +1,12 @@
-import numpy as np
+"""
+Thin re-export so notebooks keep working.
+The real definitions live in backend/app/features.py (single source of truth).
+"""
+import sys
+from pathlib import Path
 
-def create_features(df):
+_BACKEND = Path(__file__).resolve().parents[1] / "backend"
+if str(_BACKEND) not in sys.path:
+    sys.path.insert(0, str(_BACKEND))
 
-    df = df.copy()
-
-    df['expense_ratio'] = (
-        df['annual_expenditure_inr'] /
-        df['total_income_inr']
-    )
-
-    df['savings'] = (
-        df['total_income_inr'] -
-        df['annual_expenditure_inr']
-    )
-
-    df['income_per_member'] = (
-        df['total_income_inr'] /
-        df['family_members']
-    )
-
-    df['expenditure_per_member'] = (
-        df['annual_expenditure_inr'] /
-        df['family_members']
-    )
-
-    return df
+from app.features import create_features, derive_salary_bracket  # noqa: E402,F401

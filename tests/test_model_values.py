@@ -7,7 +7,7 @@ import math
 
 import pytest
 
-from app.predictor import class_mapping, model, predict_medical_plan
+from app.predictor import class_mapping, derive_salary_bracket, model, predict_medical_plan
 from known_cases import CASE_IDS, KNOWN_CASES
 
 PLANS = {"High", "Low", "Medium"}
@@ -60,3 +60,30 @@ def test_out_of_range_input_produces_warning(field, value, keyword):
     _, _, customer = KNOWN_CASES[0]
     result = predict_medical_plan({**customer, field: value})
     assert any(keyword in w.lower() for w in result["warnings"])
+
+
+@pytest.mark.parametrize("income,bracket", [
+    (151_934, "Tier-1"),
+    (499_999, "Tier-1"),
+    (500_000, "Tier-2"),
+    (1_199_999, "Tier-2"),
+    (1_200_000, "Tier-3"),
+    (2_499_999, "Tier-3"),
+    (2_500_000, "Tier-4"),
+    (4_997_509, "Tier-4"),
+])
+def test_salary_bracket_derived_from_income(income, bracket):
+    assert derive_salary_bracket(income)[0] == bracket
+
+
+@pytest.mark.parametrize("name,expected,customer", KNOWN_CASES, ids=CASE_IDS)
+def test_known_rows_bracket_matches_rule(name, expected, customer):
+    # Known rows carry their dataset bracket; the rule must agree with it.
+    assert derive_salary_bracket(customer["total_income_inr"])[0] == customer["salary_bracket"]
+
+
+def test_supplied_bracket_is_ignored():
+    _, _, customer = KNOWN_CASES[0]
+    wrong = {**customer, "salary_bracket": "Tier-1"}
+    assert predict_medical_plan(wrong) == predict_medical_plan(customer)
+    assert predict_medical_plan(wrong)["derived"]["salary_bracket"] == customer["salary_bracket"]
