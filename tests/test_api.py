@@ -29,6 +29,46 @@ def test_root_responds(client):
     assert client.get("/").status_code == 200
 
 
+def test_health(client):
+    response = client.get("/health")
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok"}
+
+
+def test_warnings_are_returned_for_out_of_range_input(client):
+    _, _, customer = KNOWN_CASES[0]
+    body = client.post("/predict", json={**customer, "age": 95}).json()
+    assert any("age" in w.lower() for w in body["warnings"])
+
+
+def test_no_warnings_for_in_range_input(client):
+    _, _, customer = KNOWN_CASES[0]
+    assert client.post("/predict", json=customer).json()["warnings"] == []
+
+
+def test_cors_rejects_unknown_origin(client):
+    response = client.options(
+        "/predict",
+        headers={
+            "Origin": "https://evil.example.com",
+            "Access-Control-Request-Method": "POST",
+        },
+    )
+    assert response.headers.get("access-control-allow-origin") != "*"
+    assert "evil.example.com" not in response.headers.get("access-control-allow-origin", "")
+
+
+def test_cors_allows_local_frontend(client):
+    response = client.options(
+        "/predict",
+        headers={
+            "Origin": "http://localhost:5173",
+            "Access-Control-Request-Method": "POST",
+        },
+    )
+    assert response.headers.get("access-control-allow-origin") == "http://localhost:5173"
+
+
 @pytest.mark.parametrize("name,expected,customer", KNOWN_CASES, ids=CASE_IDS)
 def test_predict_returns_expected_plan(client, name, expected, customer):
     response = client.post("/predict", json=customer)
@@ -45,6 +85,7 @@ def test_predict_returns_expected_plan(client, name, expected, customer):
     assert max(probs, key=probs.get) == expected
     assert math.isclose(pred["confidence"], max(probs.values()), abs_tol=0.01)
     assert set(body["metadata"]) == {"model_name", "model_version"}
+    assert body["warnings"] == []
 
 
 def test_predict_logs_one_record(client):

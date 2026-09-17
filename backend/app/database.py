@@ -1,30 +1,18 @@
-from supabase import create_client, Client
-
 import logging
 
-from app.config import (
-    SUPABASE_URL,
-    SUPABASE_KEY
-)
+from supabase import Client, create_client
 
-supabase = create_client(
-    SUPABASE_URL,
-    SUPABASE_KEY
-)
+from app.config import SUPABASE_KEY, SUPABASE_URL
 
 logger = logging.getLogger(__name__)
 
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
 
 def log_prediction(data: dict):
+    """Insert one prediction record. Failures are logged, never raised."""
     try:
-        response = (
-            supabase
-            .table("prediction_logs")
-            .insert(data)
-            .execute()
-        )
-        return response
-
-    except Exception as e:
-        logger.exception("Failed to log prediction to Supabase.")
+        return supabase.table("prediction_logs").insert(data).execute()
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("Supabase logging failed: %s: %s", type(exc).__name__, exc)
         return None

@@ -3,6 +3,35 @@ import pandas as pd
 from pathlib import Path
 
 # ----------------------------
+# Training ranges
+# ----------------------------
+# Min/max of each numeric input in data/processed/clean_data.csv (980 rows).
+# Inputs outside these ranges are still scored, but the model has never
+# seen such values, so the response carries a warning.
+
+TRAINING_RANGES = {
+    "age": (18, 75, "Age"),
+    "family_members": (1, 6, "Family size"),
+    "total_income_inr": (151934, 4997509, "Income"),
+    "annual_expenditure_inr": (5000, 416505, "Annual expenditure"),
+}
+
+
+def range_warnings(customer_data: dict) -> list[str]:
+    warnings = []
+    for field, (low, high, label) in TRAINING_RANGES.items():
+        value = customer_data.get(field)
+        if value is None:
+            continue
+        if value < low or value > high:
+            warnings.append(
+                f"{label} is outside training range ({low:,}–{high:,}); "
+                "treat this prediction with extra caution."
+            )
+    return warnings
+
+
+# ----------------------------
 # Feature Engineering
 # ----------------------------
 
@@ -49,26 +78,18 @@ class_mapping = joblib.load(MODEL_DIR / "class_mapping.pkl")
 
 def predict_medical_plan(customer_data):
 
-    df = pd.DataFrame([customer_data])
+    warnings = range_warnings(customer_data)
 
-    warnings = []
-
-    if df["total_income_inr"].iloc[0] > 5000000:
-        warnings.append("Income is outside training range.")
-
-    if df["annual_expenditure_inr"].iloc[0] > 416505:
-        warnings.append("Annual expenditure is outside training range.")
-
-    df = create_features(df)
+    df = create_features(pd.DataFrame([customer_data]))
 
     prediction = model.predict(df)[0]
 
     probabilities = model.predict_proba(df)[0]
 
-    predicted_plan = class_mapping[prediction]
+    predicted_plan = class_mapping[int(prediction)]
 
     probability_dict = {
-        class_mapping[i]: round(float(prob), 4)
+        class_mapping[int(i)]: round(float(prob), 4)
         for i, prob in zip(model.classes_, probabilities)
     }
 

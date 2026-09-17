@@ -45,7 +45,18 @@ def test_high_risk_profile_is_confidently_high():
     assert result["probabilities"]["High"] > 0.5
 
 
-def test_out_of_range_expenditure_produces_warning():
+def test_in_range_rows_have_no_warnings():
+    for _, _, customer in KNOWN_CASES:
+        assert predict_medical_plan(customer)["warnings"] == []
+
+
+@pytest.mark.parametrize("field,value,keyword", [
+    ("annual_expenditure_inr", 900000, "expenditure"),
+    ("total_income_inr", 9000000, "income"),
+    ("age", 90, "age"),
+    ("family_members", 12, "family"),
+])
+def test_out_of_range_input_produces_warning(field, value, keyword):
     _, _, customer = KNOWN_CASES[0]
-    result = predict_medical_plan({**customer, "annual_expenditure_inr": 900000})
-    assert any("expenditure" in w.lower() for w in result["warnings"])
+    result = predict_medical_plan({**customer, field: value})
+    assert any(keyword in w.lower() for w in result["warnings"])
