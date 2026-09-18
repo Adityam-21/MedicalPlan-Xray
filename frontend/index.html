@@ -31,6 +31,20 @@
 </head>
 
 <body>
+  <script>
+    // Runs before first paint: applies the saved theme, or the system
+    // preference when there is no saved choice, so the page never flashes.
+    (function () {
+      try {
+        var saved = localStorage.getItem("mpx-theme");
+        var dark = saved ? saved === "dark"
+          : window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.classList.toggle("dark", dark);
+        document.documentElement.style.colorScheme = dark ? "dark" : "light";
+      } catch (e) { /* storage blocked: stay light */ }
+    })();
+  </script>
+
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
 </body>

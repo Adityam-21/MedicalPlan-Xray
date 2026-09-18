@@ -18,15 +18,13 @@ const STRIP_FIELDS = [
 /** Compact read-back of the scored profile, so the form can collapse. */
 function ProfileStrip({ inputs, bracket, onEdit }) {
     return (
-        <div className="rounded-xl border border-slate-200 bg-white px-5 py-4">
+        <div className="rounded-xl border border-slate-200 bg-white px-5 py-4 dark:border-slate-800 dark:bg-slate-900">
             <div className="flex flex-wrap items-center justify-between gap-3">
-                <h2 className="text-[11px] font-semibold uppercase tracking-[0.09em] text-slate-500">
-                    Profile scored
-                </h2>
+                <h2 className="eyebrow">Profile scored</h2>
                 <button
                     type="button"
                     onClick={onEdit}
-                    className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:border-slate-900 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900"
+                    className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:border-slate-900 hover:text-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-300 dark:hover:text-slate-100"
                 >
                     Edit inputs
                 </button>
@@ -34,15 +32,19 @@ function ProfileStrip({ inputs, bracket, onEdit }) {
             <dl className="mt-3 flex flex-wrap gap-x-8 gap-y-2">
                 {STRIP_FIELDS.map(([key, label, format]) => (
                     <div key={key}>
-                        <dt className="text-[11px] uppercase tracking-wide text-slate-400">{label}</dt>
-                        <dd className="text-sm font-semibold tabular-nums text-slate-900">
+                        <dt className="text-[11px] uppercase tracking-wide text-slate-400 dark:text-slate-500">
+                            {label}
+                        </dt>
+                        <dd className="text-sm font-semibold tabular-nums text-slate-900 dark:text-slate-100">
                             {format(inputs[key])}
                         </dd>
                     </div>
                 ))}
                 <div>
-                    <dt className="text-[11px] uppercase tracking-wide text-slate-400">Income bracket</dt>
-                    <dd className="text-sm font-semibold text-slate-900">{bracket}</dd>
+                    <dt className="text-[11px] uppercase tracking-wide text-slate-400 dark:text-slate-500">
+                        Income bracket
+                    </dt>
+                    <dd className="text-sm font-semibold text-slate-900 dark:text-slate-100">{bracket}</dd>
                 </div>
             </dl>
         </div>
@@ -83,16 +85,16 @@ function Predict() {
     const hasReport = Boolean(prediction || isLoading || error);
 
     return (
-        <div className="min-h-screen bg-slate-50 py-10 sm:py-14">
+        <div className="min-h-screen bg-slate-50 py-10 dark:bg-slate-950 sm:py-14">
             <PageContainer size="xl">
                 <header className={hasReport ? "max-w-3xl" : "mx-auto max-w-3xl text-center"}>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-indigo-700">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-indigo-700 dark:text-indigo-300">
                         Plan tier screening
                     </p>
-                    <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                    <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
                         Which insurance plan tier fits this profile?
                     </h1>
-                    <p className="mt-3 text-slate-600">
+                    <p className="mt-3 text-slate-600 dark:text-slate-400">
                         A decision tree trained on 980 synthetic household profiles suggests a Low, Medium or High
                         plan tier, and shows the spending thresholds behind the answer. Educational demo, not
                         insurance advice.
@@ -101,11 +103,7 @@ function Predict() {
 
                 <div className={`mt-8 space-y-5 ${hasReport ? "" : "mx-auto max-w-3xl"}`}>
                     {showForm ? (
-                        <PredictionForm
-                            onStart={handleStart}
-                            onResult={handleResult}
-                            onError={handleError}
-                        />
+                        <PredictionForm onStart={handleStart} onResult={handleResult} onError={handleError} />
                     ) : (
                         <ProfileStrip
                             inputs={prediction.inputs}
@@ -115,11 +113,7 @@ function Predict() {
                     )}
 
                     <div ref={reportRef} className="scroll-mt-24">
-                        <PredictionResult
-                            prediction={prediction}
-                            isLoading={isLoading}
-                            error={error}
-                        />
+                        <PredictionResult prediction={prediction} isLoading={isLoading} error={error} />
                     </div>
                 </div>
             </PageContainer>

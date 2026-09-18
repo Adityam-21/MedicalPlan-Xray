@@ -33,13 +33,15 @@ function Input({
         required={required}
         aria-invalid={Boolean(error)}
         className={cn(
-          'block w-full rounded-lg border bg-white px-3.5 py-2.5 text-sm text-gray-900',
-          'placeholder:text-gray-400 transition-colors duration-150',
-          'focus:outline-none focus:border-primary-500 focus:shadow-focus',
-          'disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400',
+          'block w-full rounded-lg border bg-white px-3.5 py-2.5 text-sm text-slate-900',
+          'dark:bg-slate-950 dark:text-slate-100',
+          'placeholder:text-slate-400 transition-colors duration-150 dark:placeholder:text-slate-500',
+          'focus:outline-none focus:border-indigo-500 focus:shadow-focus',
+          'disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400',
+          'dark:disabled:bg-slate-900 dark:disabled:text-slate-600',
           error
-            ? 'border-danger-400 focus:border-danger-500 focus:shadow-none focus:ring-2 focus:ring-danger-100'
-            : 'border-gray-300',
+            ? 'border-danger-400 focus:border-danger-500 focus:shadow-none focus:ring-2 focus:ring-danger-100 dark:focus:ring-danger-700/40'
+            : 'border-slate-300 dark:border-slate-700',
           inputClassName,
         )}
         {...rest}

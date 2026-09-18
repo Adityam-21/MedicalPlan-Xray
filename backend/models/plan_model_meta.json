@@ -1,0 +1,162 @@
+{
+  "model_version": "2.0.0",
+  "model_name": "tree_tuned",
+  "description": "Decision tree, depth and leaf size tuned on training folds",
+  "model_class": "DecisionTreeClassifier",
+  "best_params": {
+    "model__max_depth": 2,
+    "model__min_samples_leaf": 1
+  },
+  "trained_at": "2026-09-17T15:40:50+00:00",
+  "classes": [
+    "High",
+    "Low",
+    "Medium"
+  ],
+  "input_features": {
+    "numeric": [
+      "age",
+      "total_income_inr",
+      "annual_expenditure_inr",
+      "family_members",
+      "is_smoker",
+      "expense_ratio",
+      "savings",
+      "income_per_member",
+      "expenditure_per_member"
+    ],
+    "categorical": [
+      "state_tier",
+      "occupation_class",
+      "salary_bracket"
+    ]
+  },
+  "encoded_feature_names": [
+    "age",
+    "total_income_inr",
+    "annual_expenditure_inr",
+    "family_members",
+    "is_smoker",
+    "expense_ratio",
+    "savings",
+    "income_per_member",
+    "expenditure_per_member",
+    "state_tier_Tier-1",
+    "state_tier_Tier-2",
+    "state_tier_Tier-3",
+    "occupation_class_High-Risk",
+    "occupation_class_Low-Risk",
+    "occupation_class_Medium-Risk",
+    "salary_bracket_Tier-1",
+    "salary_bracket_Tier-2",
+    "salary_bracket_Tier-3",
+    "salary_bracket_Tier-4"
+  ],
+  "feature_importances": [
+    {
+      "feature": "annual_expenditure_inr",
+      "importance": 1.0
+    }
+  ],
+  "cv": {
+    "folds": 5,
+    "seed": 42,
+    "macro_f1": {
+      "mean": 0.8135,
+      "std": 0.0208
+    },
+    "accuracy": {
+      "mean": 0.8337,
+      "std": 0.0139
+    },
+    "balanced_acc": {
+      "mean": 0.7905,
+      "std": 0.0234
+    },
+    "confusion_matrix": {
+      "labels": [
+        "High",
+        "Low",
+        "Medium"
+      ],
+      "rows_are_true": [
+        [
+          363,
+          3,
+          52
+        ],
+        [
+          17,
+          97,
+          41
+        ],
+        [
+          46,
+          4,
+          357
+        ]
+      ]
+    },
+    "per_class": {
+      "High": {
+        "precision": 0.8521,
+        "recall": 0.8684,
+        "f1-score": 0.8602,
+        "support": 418.0
+      },
+      "Low": {
+        "precision": 0.9327,
+        "recall": 0.6258,
+        "f1-score": 0.749,
+        "support": 155.0
+      },
+      "Medium": {
+        "precision": 0.7933,
+        "recall": 0.8771,
+        "f1-score": 0.8331,
+        "support": 407.0
+      }
+    }
+  },
+  "label_noise_ceiling": {
+    "conflicting_groups": 38,
+    "max_accuracy": 0.9571,
+    "note": "Computed on the original inputs including gender."
+  },
+  "training_ranges": {
+    "age": [
+      18,
+      75
+    ],
+    "family_members": [
+      1,
+      6
+    ],
+    "total_income_inr": [
+      151934,
+      4997509
+    ],
+    "annual_expenditure_inr": [
+      5000,
+      416505
+    ]
+  },
+  "data": {
+    "path": "data/processed/clean_data.csv",
+    "sha256": "3dd9139939db5eef53ff272cac33aacb1ba8f78635684de6c4348f6ddc8729d6",
+    "rows": 980,
+    "class_counts": {
+      "High": 418,
+      "Medium": 407,
+      "Low": 155
+    }
+  },
+  "versions": {
+    "python": "3.12.10",
+    "scikit-learn": "1.8.0",
+    "pandas": "3.0.3",
+    "numpy": "2.4.6",
+    "xgboost": "3.2.0",
+    "imblearn": "0.14.2"
+  }
+}

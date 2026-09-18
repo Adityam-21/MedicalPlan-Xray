@@ -1,5 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  // Class strategy: index.html sets `dark` on <html> before paint, so there
+  // is no flash, and the ThemeToggle flips it at runtime.
+  darkMode: "class",
   content: [
     "./index.html",
     "./src/**/*.{js,jsx,ts,tsx}",

@@ -1,471 +1,194 @@
 # MedicalPlan-Xray
 
-### End-to-End Machine Learning System for Medical Insurance Plan Recommendation
+An insurance plan-tier recommender that shows its reasoning: a scikit-learn decision tree
+behind a FastAPI service and a React report UI, trained on 980 synthetic household profiles.
 
-![Python](https://img.shields.io/badge/Python-3.12-blue)
-![FastAPI](https://img.shields.io/badge/FastAPI-API-teal)
-![React](https://img.shields.io/badge/React-Frontend-61DAFB)
-![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED)
-![XGBoost](https://img.shields.io/badge/XGBoost-Classifier-green)
-![Status](https://img.shields.io/badge/Status-Production--Ready-success)
-![Tests](https://img.shields.io/badge/Tests-Passing-success)
+**Every number in this README comes from `python -m src.train evaluate` in this repository.**
+Raw output lives in [`reports/cv_results.json`](reports/cv_results.json).
 
-------------------------------------------------------------------------
+| | |
+|---|---|
+| Model | Decision tree, depth 2 (depth chosen inside training folds) |
+| Macro-F1 | **0.814 ± 0.021** (5-fold stratified CV) |
+| Accuracy | **83.4%**, against a data ceiling of 95.7% |
+| Recall by tier | High 87% · Medium 88% · **Low 63%** |
+| Inputs | 7 (gender and row id deliberately excluded) |
 
-## Overview
+---
 
-MedicalPlan-Xray is an end-to-end machine learning project that
-recommends an appropriate medical insurance plan (Low, Medium or High)
-using demographic, financial and lifestyle information.
+## What this project was, and what changed
 
-The project demonstrates a complete ML lifecycle, from data preparation
-and feature engineering to model training, a production-style FastAPI
-backend, prediction logging with Supabase, automated validation and
-reproducible deployment.
+The first version of this project was a tuned XGBoost + SMOTE pipeline with a model card
+claiming **87% F1** and a "Production-Ready" badge. An audit of the code found that the number
+could not be reproduced, and that several things underneath it were wrong. Version 2 is the
+result of fixing them.
 
-------------------------------------------------------------------------
+### 1. The headline metric was measured against the data it was tuned on
 
-## 🚀 Production Highlights
+The Optuna objective scored each trial with `f1_score(y_test_xgb, ...)`, so hyperparameters were
+selected using the test set. A score chosen that way is optimistic by construction, and the
+model card's 87% did not appear anywhere in the artifacts: `model_metrics.pkl` stored 0.796.
 
-- End-to-end Machine Learning application for medical insurance recommendation
-- Production-ready FastAPI backend deployed on Northflank
-- Responsive React frontend deployed on Vercel
-- Dockerized full-stack deployment using Docker Compose
-- Serialized preprocessing and XGBoost pipeline for consistent inference
-- Real-time prediction API with confidence scores
-- Supabase integration for prediction logging
-- Feature-engineered inference pipeline with input validation
+**Fix:** tuning now runs as **nested cross-validation** (`src/train.py`), so the search only ever
+sees the training folds of the fold being scored. Re-scored honestly, the previously deployed
+configuration gets **0.789 ± 0.033**.
 
-------------------------------------------------------------------------
+### 2. The class mapping was fixed, but unverified
 
-## 🌐 Live Demo
+`class_mapping.pkl` mapped `{0: High, 1: Low, 2: Medium}`, which matches how `LabelEncoder`
+orders labels alphabetically. Nothing in the test suite checked that, and the notebook smoke test
+that appeared to confirm it was passing categories the encoder had never seen, so it would have
+looked the same with a wrong mapping.
 
-### Frontend
+**Fix:** the label order is asserted against the encoder's own ordering, checked on known rows
+through the API, and the model's class list is now read from its metadata file rather than a
+separate pickle that could drift.
 
-https://medical-plan-xray.vercel.app
+### 3. The tests only checked the shape of the response
 
-### Backend API
+They confirmed the JSON had the right keys and that probabilities summed to 1. A completely
+scrambled label mapping would have passed.
 
-https://site--medicalplan-xray--z9wsmn2822p9.code.run
+**Fix:** 80+ tests covering predicted tiers on known rows, probability ordering, threshold
+behaviour, input validation, deprecated-field handling, and every insight panel.
 
-### Interactive Swagger Documentation
+### 4. Complexity was not earning its place
 
-https://site--medicalplan-xray--z9wsmn2822p9.code.run/docs
+Scored on identical folds, the entire candidate set looks like this:
 
-------------------------------------------------------------------------
+| Model | Macro-F1 | Note |
+|---|---|---|
+| **Decision tree, depth tuned (shipped)** | **0.814 ± 0.021** | Depth 2, one feature |
+| Decision tree, depth 3 | 0.815 ± 0.017 | Same score; depth chosen after seeing results |
+| XGBoost, tuned | 0.808 ± 0.028 | All features, nested tuning |
+| XGBoost, tuned + SMOTE | 0.801 ± 0.037 | Oversampling did not help |
+| XGBoost, defaults | 0.792 ± 0.033 | |
+| Previously deployed config | 0.789 ± 0.033 | Re-scored without the leak |
+| Logistic regression | 0.726 ± 0.026 | Linear baseline |
+| Majority class | 0.199 ± 0.001 | Floor |
 
-## Features
+**Fix:** ship the tree. Every gap above is smaller than the fold-to-fold variation, so the boosted
+model was not better — only harder to explain.
 
-- End-to-end XGBoost + SMOTE classification pipeline
-- Serialized preprocessing and trained model in a single artifact
-- Automated feature engineering during inference
-- Production-ready FastAPI REST API
-- Responsive React frontend with real-time predictions
-- Confidence scores and class probability visualization
-- Supabase prediction logging
-- Pydantic request validation
-- Out-of-distribution input warnings
-- Dockerized full-stack deployment
-- Cloud deployment using Vercel and Northflank
-- Reproducible environment with pinned dependencies
-- Unit testing with Pytest
+### 5. Features that added nothing
 
-------------------------------------------------------------------------
+- **Gender** changed macro-F1 by 0.001 while the labels were gender-skewed (24.0% of men were
+  labelled Low against 7.4% of women). Dropped.
+- **`user_id`** correlated with the label. The preprocessing pipeline happened to discard it, but
+  by accident rather than intent. Now excluded explicitly.
+- **The four engineered features** changed macro-F1 by 0.001 (0.804 → 0.805 without them). Kept
+  for display only.
+- **Salary bracket** was derived from income for 979 of 980 rows, so the form stopped asking for
+  it; the API computes it.
 
-## Business Problem
+### 6. Claims the code did not support
 
-Insurance providers often need to recommend plans consistently and
-quickly. This project automates that decision using historical customer
-information while exposing predictions through an API suitable for
-integration into other applications.
+"Production-Ready" and "Tests-Passing" badges with no CI, "AI Powered" labels in the UI, a fake
+2.1-second "AI is analysing…" delay, and "explainable probability scores" for a model that
+explained nothing. All removed. The UI now shows the actual decision path, flags close calls, and
+publishes the model's weakest recall on the results page.
 
-------------------------------------------------------------------------
+---
 
-## Dataset
+## Why the simple model won
 
-| Property | Value |
-|----------------------|----------------------------|
-| Records | 980 |
-| Target Classes | 3 |
-| Original Features | 11 |
-| Engineered Features | 4 |
-| Problem Type | Multi-class Classification |
+Annual household spending alone reaches 0.808 macro-F1. Everything else combined, with spending
+removed, reaches 0.72. Spending correlates with age (0.61), smoking (0.57) and family size (0.39),
+so it already carries most of what the other columns say.
 
-Target classes:
+The shipped model is small enough to print in full:
 
-- Low
-- Medium
-- High
-
-------------------------------------------------------------------------
-
-## Repository Structure
-
-```text
-MedicalPlan-Xray/
-├── backend/
-│   ├── app/
-│   ├── models/
-│   ├── requirements.txt
-│   └── Dockerfile
-├── frontend/
-│   ├── src/
-│   ├── nginx.conf
-│   ├── Dockerfile
-│   └── package.json
-├── data/
-├── notebooks/
-├── tests/
-├── visuals/
-├── .env.example
-├── docker-compose.yml
-├── README.md
-└── LICENSE
+```
+if   spending <= ₹57,163      -> Low
+elif spending <= ₹1,39,918    -> Medium
+else                          -> High
 ```
 
-------------------------------------------------------------------------
+That is not a limitation to hide; it is the finding. The API returns the threshold that decided
+each prediction, the distance to the nearest tier change, and the count of training profiles
+behind the answer — which a 267-tree ensemble scoring 0.006 lower could not do.
 
-## Machine Learning Workflow
+## Honest limits
 
-1. Data Cleaning
-2. Exploratory Data Analysis
-3. Feature Engineering
-4. Data Preprocessing
-5. Model Training
-6. Hyperparameter Tuning
-7. Model Selection
-8. FastAPI Integration
-9. Frontend Integration
-10. Cloud Deployment
-11. Prediction Logging
+- The data is **synthetic**; nothing here describes a real insurance market.
+- **38 groups of identical profiles carry different labels**, capping accuracy at 95.7%.
+- **Low tiers are caught only 63% of the time**, usually misread as Medium.
+- Inputs outside the training ranges are scored but flagged in the response.
+- A tier is not a product: premiums, exclusions and underwriting are outside this dataset.
 
-------------------------------------------------------------------------
+---
 
-## Feature Engineering
+## Architecture
 
-Engineered features include:
-
-- Expense Ratio
-- Savings
-- Income per Family Member
-- Expenditure per Family Member
-
-------------------------------------------------------------------------
-
-## Model
-
-The deployed model is an **XGBoost classifier** trained inside an
-**imbalanced-learn Pipeline** containing:
-
-- ColumnTransformer
-- StandardScaler
-- OneHotEncoder
-- SMOTE
-- XGBoost Classifier
-
-This ensures training and inference use identical preprocessing.
-
-------------------------------------------------------------------------
-
-## Model Performance
-
-The final production model uses an XGBoost classifier trained within an imbalanced-learn pipeline incorporating SMOTE for handling class imbalance.
-
-Key characteristics:
-
-- Multi-class classification
-- Engineered financial features
-- Serialized preprocessing pipeline
-- Consistent training and inference workflow
-- Probability-based recommendations
-
-------------------------------------------------------------------------
-
-## Backend Architecture
-
-```text
-React Frontend (Vercel)
-          │
-          ▼
-     Nginx Reverse Proxy
-          │
-          ▼
- FastAPI Backend (Northflank)
-          │
-          ▼
- Feature Engineering
-          │
-          ▼
- Serialized ML Pipeline
-          │
-          ▼
- Prediction Engine
-          │
-          ▼
- Supabase Logging
+```
+frontend/   React 19 + Vite + Tailwind. Report UI, dark mode, no charting dependency.
+backend/    FastAPI. app/features.py is the single source of truth for model inputs.
+src/        train.py: nested-CV model comparison and the fit that produces the artifacts.
+tests/      Value-level model tests, API tests, insight tests.
+reports/    cv_results.json / .md — the numbers quoted above.
+docs/       model_card.md
 ```
 
-------------------------------------------------------------------------
+Training and inference import the **same** feature module, so the two cannot drift apart.
 
-## Deployment
+## Run it locally
 
-| Component         | Technology              |
-| ----------------- | ----------------------- |
-| Frontend          | React + Vercel          |
-| Backend           | FastAPI + Northflank    |
-| Containerization  | Docker + Docker Compose |
-| Reverse Proxy     | Nginx                   |
-| Database          | Supabase                |
-| Model             | XGBoost + SMOTE         |
-| API Documentation | Swagger UI              |
+Requires Python 3.12+ and Node 20+.
 
-------------------------------------------------------------------------
+```bash
+# Backend
+python -m venv .venv
+.venv\Scripts\Activate.ps1          # PowerShell; use source .venv/bin/activate on macOS/Linux
+pip install -r backend/requirements.txt
+cd backend
+python -m uvicorn app.main:app --port 8000
+```
+
+```bash
+# Frontend (second terminal)
+cd frontend
+npm install
+npm run dev                          # http://localhost:5173
+```
+
+Copy `.env.example` to `.env` and fill in the Supabase values. Prediction logging fails softly, so
+the API still works without them.
+
+### Reproduce the numbers
+
+```bash
+python -m src.train evaluate           # compares every candidate, writes reports/
+python -m src.train fit --model tree_tuned   # saves the model, metadata and reference stats
+python -m pytest -q                    # 80+ tests
+```
 
 ## API
 
-### POST /predict
-
-Returns:
-
-- Recommended plan
-- Confidence
-- Class probabilities
-- Model metadata
-
-Example response:
+`POST /predict`
 
 ```json
 {
-  "status": "success",
-  "prediction": {
-    "recommended_plan": "Medium",
-    "confidence": 89.62
-  }
+  "age": 45, "state_tier": "Tier-2", "occupation_class": "Medium-Risk",
+  "total_income_inr": 700000, "annual_expenditure_inr": 135000,
+  "is_smoker": 0, "family_members": 4
 }
 ```
 
-------------------------------------------------------------------------
+Returns the tier, probabilities, the decision path, close-call analysis, distance to the next
+tier, percentiles, comparable-profile statistics, range warnings, model metadata and a
+disclaimer. `gender` and `salary_bracket` are still accepted from v1 clients, ignored, and
+reported back in `notices`.
 
-## Installation
+`GET /model` returns the model summary and its cross-validated scores. `GET /health` is a probe.
 
-Clone the repository:
+## Data and privacy
 
-```bash
-git clone https://github.com/Adityam-21/MedicalPlan-Xray.git
-cd MedicalPlan-Xray
-```
-
-### Option 1 — Docker (Recommended)
-
-1. Copy the example environment file:
-
-```bash
-cp .env.example .env
-```
-
-2. Add your Supabase credentials to `.env`:
-
-```text
-SUPABASE_URL=your_supabase_url
-SUPABASE_KEY=your_supabase_key
-```
-
-3. Build and start the application:
-
-```bash
-docker compose up --build
-```
-
-The application will be available at:
-
-| Service | URL |
-|---------|-----|
-| Frontend | http://localhost:3000 |
-| Backend API | http://localhost:8000 |
-| Swagger Documentation | http://localhost:8000/docs |
+Predictions are logged to Supabase (inputs, predicted tier, confidence). The form says so. There
+is no authentication, so do not enter real personal data.
 
 ---
 
-### Option 2 — Manual Setup
+Built by [Kumar Adityam](https://www.linkedin.com/in/kumar-adityam/) ·
+[GitHub](https://github.com/Adityam-21)
 
-Create and activate a virtual environment:
-
-```bash
-python -m venv venv
-
-# Windows
-venv\Scripts\activate
-```
-
-Install the required dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-Copy the example environment file:
-
-```bash
-cp .env.example .env
-```
-
-Add your Supabase credentials to `.env`:
-
-```text
-SUPABASE_URL=your_supabase_url
-SUPABASE_KEY=your_supabase_key
-```
-
-Run the FastAPI application:
-
-```bash
-python -m uvicorn backend.app.main:app --reload
-```
-
-The application will be available at:
-
-| Service | URL |
-|---------|-----|
-| Backend API | http://127.0.0.1:8000 |
-| Swagger Documentation | http://127.0.0.1:8000/docs |
-
-------------------------------------------------------------------------
-
-## Running Tests
-
-Run the test suite:
-
-```bash
-python -m pytest
-```
-
-Current Status
-
-```text
-2 tests passed
-```
-
-------------------------------------------------------------------------
-
-## Technology Stack
-
-### Machine Learning
-
-- XGBoost
-- Scikit-learn
-- Imbalanced-Learn
-- Pandas
-- NumPy
-
-### Backend
-
-- FastAPI
-- Pydantic
-- SQLAlchemy
-
-### Frontend
-
-- React
-- Tailwind CSS
-- Axios
-
-### Database
-
-- Supabase
-
-### DevOps
-
-- Docker
-- Docker Compose
-- Nginx
-- Northflank
-- Vercel
-
-### Testing
-
-- Pytest
-
-------------------------------------------------------------------------
-
-# 📸 Application Preview
-
-Explore the production-ready interface of **MedicalPlan-Xray**, including the user workflow from customer input to AI-powered insurance plan recommendations.
-
----
-
-## 🖥️ Web Application
-
-| 🏠 Home | 📝 Prediction |
-|:--------:|:-------------:|
-| ![Home](visuals/home.png) | ![Prediction Page](visuals/predict.png) |
-
-| 🤖 AI Recommendation | ℹ️ About |
-|:-------------------:|:--------:|
-| ![Prediction Result](visuals/prediction-result.png) | ![About](visuals/about.png) |
-
----
-
-## ⚡ API Documentation (Swagger UI)
-
-The FastAPI backend automatically generates interactive API documentation for testing and exploring endpoints without additional tools.
-
-| 📋 API Overview | 🚀 Prediction Endpoint |
-|:--------------:|:----------------------:|
-| ![Swagger UI](visuals/swagger-api.png) | ![Prediction Endpoint](visuals/swagger-api-prediction.png) |
-
----
-
-## 📱 Key Capabilities Demonstrated
-
-- Responsive React frontend
-- Real-time insurance plan prediction
-- Confidence score visualization
-- Multi-class probability distribution
-- Interactive Swagger API documentation
-- Production-ready FastAPI backend
-
-------------------------------------------------------------------------
-
-## Current Limitations
-
-While the application is fully functional and deployed in production, the current version has a few engineering limitations that would typically be addressed in a larger scale production environment.
-
-- Authentication and role-based access control are not implemented.
-- CI/CD pipelines for automated testing and deployment are not yet configured.
-- Model performance and prediction monitoring are not available.
-- Automated model retraining and data drift detection are not implemented.
-- The system currently supports single record inference only (no batch prediction endpoint).
-- Prediction history analytics and operational dashboards are not included.
-
-------------------------------------------------------------------------
-
-## Future Roadmap
-
-- GitHub Actions CI/CD
-- Model monitoring and observability
-- Data drift detection
-- Automated retraining pipeline
-- Authentication & authorization
-- Dashboard analytics
-- SHAP-based explainability dashboard
-- Batch prediction endpoint
-
-------------------------------------------------------------------------
-
-## Author
-
-**Kumar Adityam**
-
-Machine Learning Engineer • Backend Developer
-
-GitHub:
-https://github.com/Adityam-21
-
-LinkedIn:
-https://linkedin.com/in/kumar-adityam-4b2b7b1b4
-
-------------------------------------------------------------------------
-
-## License
-
-This project is released under the MIT License.
+Educational demo. Not insurance, financial or medical advice.

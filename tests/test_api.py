@@ -84,7 +84,10 @@ def test_predict_returns_expected_plan(client, name, expected, customer):
     assert math.isclose(sum(probs.values()), 100.0, abs_tol=0.1)
     assert max(probs, key=probs.get) == expected
     assert math.isclose(pred["confidence"], max(probs.values()), abs_tol=0.01)
-    assert set(body["metadata"]) == {"model_name", "model_version"}
+    assert body["metadata"]["api_version"] == "2.0.0"
+    assert body["metadata"]["model_version"]
+    assert "Not insurance" in body["disclaimer"]
+    assert body["insights"]["decision_path"]
     assert body["warnings"] == []
     assert body["derived"]["salary_bracket"] == customer["salary_bracket"]
 
@@ -97,7 +100,7 @@ def test_predict_logs_one_record(client):
 
 
 @pytest.mark.parametrize("field,bad_value", [
-    ("gender", "Other-Invalid"),
+    ("gender", "Other-Invalid"),  # deprecated, but invalid values still rejected
     ("state_tier", "Tier-9"),
     ("occupation_class", "Professional"),
     ("salary_bracket", "50K-1L"),
@@ -141,3 +144,31 @@ def test_log_record_uses_derived_bracket(client):
     payload = {k: v for k, v in customer.items() if k != "salary_bracket"}
     client.post("/predict", json=payload)
     assert client.logged[-1]["salary_bracket"] == customer["salary_bracket"]
+
+
+def test_model_endpoint(client):
+    body = client.get("/model").json()
+    assert body["api_version"] == "2.0.0"
+    assert 0 < body["cv_macro_f1"]["mean"] <= 1
+    assert "disclaimer" in body
+
+
+def test_v2_request_without_gender_or_bracket(client):
+    _, expected, customer = KNOWN_CASES[0]
+    payload = {k: v for k, v in customer.items() if k not in ("gender", "salary_bracket")}
+    body = client.post("/predict", json=payload).json()
+    assert body["prediction"]["recommended_plan"] == expected
+    assert body["notices"] == []
+    assert "gender" not in body["inputs"]
+
+
+def test_deprecated_fields_produce_notice(client):
+    _, _, customer = KNOWN_CASES[0]
+    body = client.post("/predict", json=customer).json()
+    assert any("gender" in n for n in body["notices"])
+
+
+def test_log_record_has_no_gender(client):
+    _, _, customer = KNOWN_CASES[0]
+    client.post("/predict", json=customer)
+    assert "gender" not in client.logged[-1]

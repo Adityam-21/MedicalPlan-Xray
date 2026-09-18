@@ -91,23 +91,23 @@ function PredictionForm({ onStart, onResult, onError }) {
     };
 
     return (
-        <section className="rounded-xl border border-slate-200 bg-white">
+        <section className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
             <header className="flex flex-wrap items-baseline justify-between gap-2 border-b border-slate-100 px-5 py-3">
-                <h2 className="text-[11px] font-semibold uppercase tracking-[0.09em] text-slate-500">
+                <h2 className="text-[11px] font-semibold uppercase tracking-[0.09em] text-slate-500 dark:text-slate-400">
                     Profile details
                 </h2>
-                <span className="text-[11px] text-slate-400">All fields required</span>
+                <span className="text-[11px] text-slate-400 dark:text-slate-500">All fields required</span>
             </header>
 
             <div className="px-5 pt-4">
             <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[11px] uppercase tracking-wide text-slate-400">Examples</span>
+                <span className="text-[11px] uppercase tracking-wide text-slate-400 dark:text-slate-500">Examples</span>
                 {PRESETS.map((preset) => (
                     <button
                         key={preset.name}
                         type="button"
                         onClick={() => applyPreset(preset)}
-                        className="rounded-lg border border-slate-300 px-3 py-1 text-xs font-medium text-slate-700 transition hover:border-slate-900 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900"
+                        className="rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 transition hover:border-slate-900 dark:hover:border-slate-300 hover:text-slate-900 dark:hover:text-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900"
                     >
                         {preset.name}
                     </button>
@@ -235,7 +235,7 @@ function PredictionForm({ onStart, onResult, onError }) {
                     Predict plan
                 </Button>
 
-                <p className="text-[11px] leading-relaxed text-slate-500">
+                <p className="text-[11px] leading-relaxed text-slate-500 dark:text-slate-400">
                     Inputs are sent to the prediction API and stored in a prediction log. Do not enter anything
                     you would not want recorded.
                 </p>

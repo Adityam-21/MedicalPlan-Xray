@@ -8,7 +8,8 @@ Two commands, run from the repo root:
   python -m src.train fit --model tree_d4 # train the chosen model on all data
 
 `evaluate` writes reports/cv_results.json and reports/cv_results.md.
-`fit` writes backend/models/plan_model.joblib and plan_model_meta.json.
+`fit` writes backend/models/plan_model.joblib, plan_model_meta.json and
+reference_stats.json (aggregate context shown on the results page).
 The live API keeps using insurance_model.pkl until it is switched over.
 
 Honesty rules built in:
@@ -54,8 +55,10 @@ sys.path.insert(0, str(ROOT / "backend"))
 
 from app.features import (  # noqa: E402
     CATEGORICAL,
+    CONTEXT_FACTORS,
     ENGINEERED,
     NUMERIC_BASE,
+    PEER_LEVELS,
     TRAINING_RANGES,
     create_features,
     derive_salary_bracket,
@@ -321,6 +324,7 @@ def fit(args):
     nums = list(pre.transformers_[0][2])
     cats = list(pre.transformers_[1][2])
     meta = {
+        "model_version": args.version,
         "model_name": args.model,
         "description": desc,
         "model_class": type(model).__name__,
@@ -355,12 +359,58 @@ def fit(args):
     MODEL_DIR.mkdir(parents=True, exist_ok=True)
     joblib.dump(final, MODEL_DIR / "plan_model.joblib")
     (MODEL_DIR / "plan_model_meta.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
+    reference = build_reference_stats(df, labels)
+    (MODEL_DIR / "reference_stats.json").write_text(json.dumps(reference, indent=2), encoding="utf-8")
 
     print(json.dumps({"model": args.model, "cv": {k: meta["cv"][k] for k in SCORING}}, indent=2))
     print("Confusion matrix (rows = true, cols = predicted):", labels)
     for label, row in zip(labels, meta["cv"]["confusion_matrix"]["rows_are_true"]):
         print(f"  {label:7} {row}")
-    print(f"\nWrote {MODEL_DIR / 'plan_model.joblib'} and plan_model_meta.json")
+    if best_params:
+        print("Chosen by inner CV:", best_params)
+    print(f"\nWrote {MODEL_DIR / 'plan_model.joblib'}, plan_model_meta.json, reference_stats.json")
+
+
+# ----------------------------------------------------------------------------
+# Reference statistics (aggregates only; no individual rows are stored)
+# ----------------------------------------------------------------------------
+
+def _group_stats(frame: pd.DataFrame, labels: list[str]) -> dict:
+    mix = frame["medical_plan"].value_counts(normalize=True)
+    return {
+        "count": int(len(frame)),
+        "median_expenditure": float(frame["annual_expenditure_inr"].median()),
+        "plan_mix": {c: round(float(mix.get(c, 0.0)) * 100, 1) for c in labels},
+    }
+
+
+def build_reference_stats(df: pd.DataFrame, labels: list[str]) -> dict:
+    ctx = pd.DataFrame({key: df[field].map(fn) for key, _, fn, field in CONTEXT_FACTORS})
+    ctx["medical_plan"] = df["medical_plan"].values
+    ctx["annual_expenditure_inr"] = df["annual_expenditure_inr"].values
+
+    factors = {
+        key: {str(g): _group_stats(part, labels) for g, part in ctx.groupby(key)}
+        for key, *_ in CONTEXT_FACTORS
+    }
+    peers = {}
+    for level in PEER_LEVELS:
+        peers["|".join(level)] = {
+            "|".join(map(str, g if isinstance(g, tuple) else (g,))): _group_stats(part, labels)
+            for g, part in ctx.groupby(level)
+        }
+    qs = np.linspace(0, 1, 101)
+    quantiles = {
+        col: [round(float(v), 4) for v in df[col].quantile(qs)]
+        for col in ("annual_expenditure_inr", "total_income_inr", "expense_ratio")
+    }
+    return {
+        "rows": int(len(df)),
+        "overall": _group_stats(ctx, labels),
+        "quantiles": quantiles,
+        "factors": factors,
+        "peers": peers,
+    }
 
 
 # ----------------------------------------------------------------------------
@@ -418,6 +468,7 @@ def main():
     p_fit = sub.add_parser("fit", help="train one model on all data and save it")
     p_fit.add_argument("--model", required=True, choices=CANDIDATES)
     p_fit.add_argument("--quick", action="store_true")
+    p_fit.add_argument("--version", default="2.0.0", help="model version recorded in metadata")
 
     args = parser.parse_args()
     args.n_iter = 8 if args.quick else 30

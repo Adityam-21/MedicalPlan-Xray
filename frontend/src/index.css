@@ -25,6 +25,22 @@
   --warn-bg: #fffbeb;
 }
 
+.dark {
+  --surface: #020617;
+  --surface-raised: #0f172a;
+  --line: #1e293b;
+  --line-soft: #1e293b;
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-faint: #64748b;
+  --accent: #818cf8;
+  --accent-soft: #1e1b4b;
+  --plan-low: #38bdf8;
+  --plan-medium: #818cf8;
+  --plan-high: #a855f7;
+  --warn-bg: #2a1e05;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -55,16 +71,27 @@
 @layer components {
   /* Small-caps section label used on every page. */
   .eyebrow {
-    @apply text-[11px] font-semibold uppercase tracking-label text-slate-500;
+    @apply text-[11px] font-semibold uppercase tracking-label text-slate-500 dark:text-slate-400;
+  }
+
+  /* Gradient accents, used sparingly: hero highlight and key figures. */
+  .text-gradient {
+    @apply bg-gradient-to-r from-indigo-600 to-sky-500 bg-clip-text text-transparent;
+    @apply dark:from-violet-400 dark:to-cyan-300;
+  }
+
+  .surface-gradient {
+    @apply bg-gradient-to-b from-white to-slate-50;
+    @apply dark:from-slate-900 dark:to-slate-950;
   }
 
   /* Report panel: hairline border, no shadow theatre. */
   .panel {
-    @apply rounded-xl border border-slate-200 bg-white;
+    @apply rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900;
   }
 
   .panel-header {
-    @apply flex items-baseline justify-between gap-3 border-b border-slate-100 px-5 py-3;
+    @apply flex items-baseline justify-between gap-3 border-b border-slate-100 px-5 py-3 dark:border-slate-800;
   }
 
   .panel-body {
@@ -73,6 +100,7 @@
 
   .rule-note {
     @apply rounded-lg border-l-2 border-amber-400 bg-amber-50 px-4 py-2.5 text-sm text-amber-900;
+    @apply dark:bg-amber-950/40 dark:text-amber-200;
   }
 }
 
@@ -83,13 +111,17 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: var(--line-soft);
 }
 
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 999px;
-  border: 2px solid #f1f5f9;
+  border: 2px solid var(--line-soft);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
 }
 
 ::-webkit-scrollbar-thumb:hover {

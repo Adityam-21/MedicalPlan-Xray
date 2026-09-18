@@ -54,10 +54,10 @@ const STACK = [
 
 function Section({ eyebrow, title, children, tone = "white" }) {
     return (
-        <section className={`border-b border-slate-200 ${tone === "white" ? "bg-white" : "bg-slate-50"}`}>
+        <section className={`border-b border-slate-200 dark:border-slate-800 ${tone === "white" ? "bg-white dark:bg-slate-900" : "bg-slate-50 dark:bg-slate-950"}`}>
             <PageContainer size="xl" className="py-16">
                 <p className="eyebrow">{eyebrow}</p>
-                <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">{title}</h2>
+                <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">{title}</h2>
                 <div className="mt-6">{children}</div>
             </PageContainer>
         </section>
@@ -67,13 +67,13 @@ function Section({ eyebrow, title, children, tone = "white" }) {
 function About() {
     return (
         <div>
-            <section className="border-b border-slate-200 bg-white">
+            <section className="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
                 <PageContainer size="xl" className="py-16 sm:py-20">
                     <p className="eyebrow">How it works</p>
-                    <h1 className="mt-3 max-w-3xl text-4xl font-bold leading-tight tracking-tight text-slate-900 sm:text-5xl">
+                    <h1 className="mt-3 max-w-3xl text-4xl font-bold leading-tight tracking-tight text-slate-900 dark:text-white sm:text-5xl">
                         A simple model, an audited pipeline, and no inflated numbers
                     </h1>
-                    <p className="mt-5 max-w-2xl text-lg leading-relaxed text-slate-600">
+                    <p className="mt-5 max-w-2xl text-lg leading-relaxed text-slate-600 dark:text-slate-400">
                         This project started as a tuned XGBoost model with SMOTE and a model card claiming 87% F1.
                         An audit found the score was measured against the test set it was tuned on. Here is what
                         replaced it.
@@ -85,30 +85,30 @@ function About() {
                 <div className="grid gap-5 md:grid-cols-3">
                     <div className="panel shadow-panel">
                         <div className="panel-body">
-                            <p className="font-mono text-2xl font-medium tabular-nums text-slate-900">980</p>
-                            <p className="mt-1 text-sm text-slate-600">
+                            <p className="font-mono text-2xl font-medium tabular-nums text-slate-900 dark:text-slate-100">980</p>
+                            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
                                 rows, labelled Low (155), Medium (407) or High (418)
                             </p>
                         </div>
                     </div>
                     <div className="panel shadow-panel">
                         <div className="panel-body">
-                            <p className="font-mono text-2xl font-medium tabular-nums text-slate-900">38</p>
-                            <p className="mt-1 text-sm text-slate-600">
+                            <p className="font-mono text-2xl font-medium tabular-nums text-slate-900 dark:text-slate-100">38</p>
+                            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
                                 groups of identical profiles carry different labels
                             </p>
                         </div>
                     </div>
                     <div className="panel shadow-panel">
                         <div className="panel-body">
-                            <p className="font-mono text-2xl font-medium tabular-nums text-slate-900">95.7%</p>
-                            <p className="mt-1 text-sm text-slate-600">
+                            <p className="font-mono text-2xl font-medium tabular-nums text-slate-900 dark:text-slate-100">95.7%</p>
+                            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
                                 the highest accuracy any model could reach on this data
                             </p>
                         </div>
                     </div>
                 </div>
-                <p className="mt-5 max-w-3xl text-sm leading-relaxed text-slate-600">
+                <p className="mt-5 max-w-3xl text-sm leading-relaxed text-slate-600 dark:text-slate-400">
                     That last figure matters. Because identical inputs sometimes carry different labels, a model
                     scoring 83% is closer to the ceiling than it first appears, and anything claiming near-perfect
                     accuracy on this dataset would be suspicious.
@@ -116,29 +116,29 @@ function About() {
             </Section>
 
             <Section eyebrow="Model selection" title="Every candidate, scored the same way">
-                <div className="overflow-x-auto rounded-xl border border-slate-200">
+                <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
                     <table className="w-full min-w-[34rem] text-left text-sm">
-                        <thead className="border-b border-slate-200 bg-slate-50">
+                        <thead className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950">
                             <tr>
-                                <th scope="col" className="px-5 py-3 font-semibold text-slate-700">Model</th>
-                                <th scope="col" className="px-5 py-3 font-semibold text-slate-700">Macro-F1</th>
-                                <th scope="col" className="px-5 py-3 font-semibold text-slate-700">Note</th>
+                                <th scope="col" className="px-5 py-3 font-semibold text-slate-700 dark:text-slate-300">Model</th>
+                                <th scope="col" className="px-5 py-3 font-semibold text-slate-700 dark:text-slate-300">Macro-F1</th>
+                                <th scope="col" className="px-5 py-3 font-semibold text-slate-700 dark:text-slate-300">Note</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100 bg-white">
+                        <tbody className="divide-y divide-slate-100 dark:divide-slate-800 bg-white dark:bg-slate-900">
                             {RESULTS.map((row, i) => (
-                                <tr key={row.model} className={i === 0 ? "bg-indigo-50/40" : undefined}>
-                                    <td className="px-5 py-3 text-slate-800">{row.model}</td>
-                                    <td className="whitespace-nowrap px-5 py-3 font-mono tabular-nums text-slate-900">
+                                <tr key={row.model} className={i === 0 ? "bg-indigo-50/40 dark:bg-indigo-950/30" : undefined}>
+                                    <td className="px-5 py-3 text-slate-800 dark:text-slate-200">{row.model}</td>
+                                    <td className="whitespace-nowrap px-5 py-3 font-mono tabular-nums text-slate-900 dark:text-slate-100">
                                         {row.f1}
                                     </td>
-                                    <td className="px-5 py-3 text-slate-500">{row.note}</td>
+                                    <td className="px-5 py-3 text-slate-500 dark:text-slate-400">{row.note}</td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
-                <p className="mt-3 text-xs text-slate-500">
+                <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
                     5-fold stratified cross-validation, seed 42. Tuned models use nested cross-validation, so the
                     search never sees the fold it is scored on.
                 </p>
@@ -146,7 +146,7 @@ function About() {
 
             <Section eyebrow="The finding" title="Why the simple model won" tone="slate">
                 <div className="grid gap-8 lg:grid-cols-2">
-                    <div className="space-y-4 text-sm leading-relaxed text-slate-700">
+                    <div className="space-y-4 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
                         <p>
                             Gradient boosting with every feature scored 0.808. A decision tree two levels deep,
                             using annual household spending alone, scored 0.814. The gap is smaller than the
@@ -167,11 +167,11 @@ function About() {
                         <div className="panel-header">
                             <h3 className="eyebrow">The shipped model, in full</h3>
                         </div>
-                        <div className="panel-body space-y-3 font-mono text-xs leading-relaxed text-slate-700">
-                            <p>if spending ≤ ₹57,163 → <span className="font-semibold text-slate-900">Low</span></p>
-                            <p>elif spending ≤ ₹1,39,918 → <span className="font-semibold text-slate-900">Medium</span></p>
-                            <p>else → <span className="font-semibold text-slate-900">High</span></p>
-                            <p className="border-t border-slate-100 pt-3 font-sans text-slate-500">
+                        <div className="panel-body space-y-3 font-mono text-xs leading-relaxed text-slate-700 dark:text-slate-300">
+                            <p>if spending ≤ ₹57,163 → <span className="font-semibold text-slate-900 dark:text-slate-100">Low</span></p>
+                            <p>elif spending ≤ ₹1,39,918 → <span className="font-semibold text-slate-900 dark:text-slate-100">Medium</span></p>
+                            <p>else → <span className="font-semibold text-slate-900 dark:text-slate-100">High</span></p>
+                            <p className="border-t border-slate-100 dark:border-slate-800 pt-3 font-sans text-slate-500 dark:text-slate-400">
                                 That is the entire decision rule. It is printed here because a model you can read
                                 is a model you can check.
                             </p>
@@ -185,8 +185,8 @@ function About() {
                     {FIXES.map((fix) => (
                         <div key={fix.title} className="panel shadow-panel">
                             <div className="panel-body">
-                                <h3 className="text-sm font-semibold text-slate-900">{fix.title}</h3>
-                                <p className="mt-2 text-sm leading-relaxed text-slate-600">{fix.body}</p>
+                                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{fix.title}</h3>
+                                <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{fix.body}</p>
                             </div>
                         </div>
                     ))}
@@ -194,7 +194,7 @@ function About() {
             </Section>
 
             <Section eyebrow="Limitations" title="What this model cannot tell you" tone="slate">
-                <ul className="max-w-3xl space-y-3 text-sm leading-relaxed text-slate-700">
+                <ul className="max-w-3xl space-y-3 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
                     <li className="flex gap-3">
                         <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />
                         The data is synthetic. Patterns here need not hold for real households anywhere.
@@ -216,19 +216,19 @@ function About() {
             </Section>
 
             <Section eyebrow="Implementation" title="Stack and source">
-                <dl className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
+                <dl className="divide-y divide-slate-100 dark:divide-slate-800 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
                     {STACK.map(([label, value]) => (
                         <div key={label} className="flex flex-col gap-1 px-5 py-4 sm:flex-row sm:items-baseline sm:gap-6">
-                            <dt className="w-40 shrink-0 text-sm font-semibold text-slate-900">{label}</dt>
-                            <dd className="text-sm text-slate-600">{value}</dd>
+                            <dt className="w-40 shrink-0 text-sm font-semibold text-slate-900 dark:text-slate-100">{label}</dt>
+                            <dd className="text-sm text-slate-600 dark:text-slate-400">{value}</dd>
                         </div>
                     ))}
                 </dl>
 
-                <div className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white px-6 py-6">
+                <div className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-6">
                     <div>
-                        <h3 className="text-lg font-semibold text-slate-900">Read the code or get in touch</h3>
-                        <p className="mt-1 text-sm text-slate-600">
+                        <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Read the code or get in touch</h3>
+                        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
                             The training script, tests and model card are all in the repository.
                         </p>
                     </div>
@@ -237,7 +237,7 @@ function About() {
                             href={REPO_URL}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="rounded-lg bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
+                            className="rounded-lg bg-slate-900 dark:bg-indigo-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700 dark:hover:bg-indigo-500"
                         >
                             GitHub
                         </a>
@@ -245,13 +245,13 @@ function About() {
                             href={LINKEDIN_URL}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="rounded-lg border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-900 hover:text-slate-900"
+                            className="rounded-lg border border-slate-300 dark:border-slate-700 px-5 py-3 text-sm font-semibold text-slate-700 dark:text-slate-300 transition hover:border-slate-900 dark:hover:border-slate-300 hover:text-slate-900 dark:hover:text-slate-100"
                         >
                             LinkedIn
                         </a>
                         <Link
                             to="/predict"
-                            className="rounded-lg border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-900 hover:text-slate-900"
+                            className="rounded-lg border border-slate-300 dark:border-slate-700 px-5 py-3 text-sm font-semibold text-slate-700 dark:text-slate-300 transition hover:border-slate-900 dark:hover:border-slate-300 hover:text-slate-900 dark:hover:text-slate-100"
                         >
                             Score a profile
                         </Link>

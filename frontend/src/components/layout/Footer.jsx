@@ -29,14 +29,14 @@ function Footer() {
     const year = new Date().getFullYear();
 
     return (
-        <footer className="border-t border-slate-200 bg-white">
+        <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
             <PageContainer size="xl" className="py-10">
                 <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
                     <div className="max-w-md">
-                        <Link to="/" className="text-base font-bold tracking-tight text-slate-900">
-                            MedicalPlan<span className="text-indigo-700">-Xray</span>
+                        <Link to="/" className="text-base font-bold tracking-tight text-slate-900 dark:text-slate-100">
+                            MedicalPlan<span className="text-indigo-700 dark:text-indigo-300">-Xray</span>
                         </Link>
-                        <p className="mt-2 text-sm leading-relaxed text-slate-500">
+                        <p className="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
                             An interpretable plan-tier model with the reasoning shown alongside every result.
                             Educational demo on synthetic data — not insurance, financial or medical advice.
                         </p>
@@ -50,7 +50,7 @@ function Footer() {
                                     <li key={link.to}>
                                         <Link
                                             to={link.to}
-                                            className="text-sm text-slate-600 transition hover:text-slate-900"
+                                            className="text-sm text-slate-600 dark:text-slate-400 transition hover:text-slate-900 dark:hover:text-slate-100"
                                         >
                                             {link.label}
                                         </Link>
@@ -68,10 +68,10 @@ function Footer() {
                                             href={link.href}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="group inline-flex items-center gap-2 text-sm text-slate-600 transition hover:text-slate-900"
+                                            className="group inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 transition hover:text-slate-900 dark:hover:text-slate-100"
                                         >
                                             <svg
-                                                className="h-4 w-4 text-slate-400 transition group-hover:text-slate-900"
+                                                className="h-4 w-4 text-slate-400 dark:text-slate-500 transition group-hover:text-slate-900 dark:group-hover:text-slate-100"
                                                 viewBox="0 0 24 24"
                                                 fill="currentColor"
                                                 aria-hidden="true"
@@ -87,7 +87,7 @@ function Footer() {
                     </div>
                 </div>
 
-                <p className="mt-8 border-t border-slate-100 pt-6 text-xs text-slate-400">
+                <p className="mt-8 border-t border-slate-100 dark:border-slate-800 pt-6 text-xs text-slate-400 dark:text-slate-500">
                     © {year} Kumar Adityam · MedicalPlan-Xray
                 </p>
             </PageContainer>

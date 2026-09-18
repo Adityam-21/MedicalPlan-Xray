@@ -2,7 +2,7 @@ function ErrorMessage({ children }) {
   if (!children) return null
 
   return (
-    <p className="mt-1 text-sm text-red-600">
+    <p role="alert" className="mt-1 text-xs font-medium text-danger-600 dark:text-danger-400">
       {children}
     </p>
   )

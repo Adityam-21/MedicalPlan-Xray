@@ -5,16 +5,14 @@ import { formatINR, pct, shortINR } from "../../utils/format";
  * High tier is a recommendation rather than a danger signal. Intensity rises
  * with the tier so the bars stay readable in greyscale and when printed.
  */
+// Sequential gradients: intensity rises with the tier, so the scale reads as
+// levels of cover rather than a traffic light, in either theme.
 export const PLAN_BG = {
-    Low: "bg-sky-300",
-    Medium: "bg-indigo-400",
-    High: "bg-indigo-700",
+    Low: "bg-gradient-to-r from-sky-300 to-sky-400 dark:from-sky-500 dark:to-cyan-400",
+    Medium: "bg-gradient-to-r from-indigo-400 to-indigo-500 dark:from-indigo-500 dark:to-violet-400",
+    High: "bg-gradient-to-r from-indigo-700 to-indigo-600 dark:from-violet-600 dark:to-fuchsia-500",
 };
-export const PLAN_DOT = {
-    Low: "bg-sky-300",
-    Medium: "bg-indigo-400",
-    High: "bg-indigo-700",
-};
+export const PLAN_DOT = PLAN_BG;
 const PLAN_ORDER = ["Low", "Medium", "High"];
 
 export function ProbabilityBars({ probabilities, recommended }) {
@@ -26,21 +24,21 @@ export function ProbabilityBars({ probabilities, recommended }) {
                         <span
                             className={
                                 plan === recommended
-                                    ? "text-sm font-semibold text-slate-900"
-                                    : "text-sm text-slate-500"
+                                    ? "text-sm font-semibold text-slate-900 dark:text-slate-100"
+                                    : "text-sm text-slate-500 dark:text-slate-400"
                             }
                         >
                             {plan}
                         </span>
                         <span
                             className={`tabular-nums text-sm ${
-                                plan === recommended ? "font-semibold text-slate-900" : "text-slate-500"
+                                plan === recommended ? "font-semibold text-slate-900 dark:text-slate-100" : "text-slate-500 dark:text-slate-400"
                             }`}
                         >
                             {pct(probabilities[plan], 1)}
                         </span>
                     </div>
-                    <div className="h-2 overflow-hidden rounded-sm bg-slate-100">
+                    <div className="h-2 overflow-hidden rounded-sm bg-slate-100 dark:bg-slate-800">
                         <div
                             className={`h-full ${PLAN_BG[plan]} ${plan === recommended ? "" : "opacity-45"}`}
                             style={{ width: `${Math.max(probabilities[plan], 1)}%` }}
@@ -54,7 +52,7 @@ export function ProbabilityBars({ probabilities, recommended }) {
 
 export function PlanMixBar({ mix, height = "h-2.5" }) {
     return (
-        <div className={`flex ${height} w-full overflow-hidden rounded-sm bg-slate-100`}>
+        <div className={`flex ${height} w-full overflow-hidden rounded-sm bg-slate-100 dark:bg-slate-800`}>
             {PLAN_ORDER.map((plan) =>
                 mix[plan] > 0 ? (
                     <div
@@ -71,7 +69,7 @@ export function PlanMixBar({ mix, height = "h-2.5" }) {
 
 export function PlanMixLegend({ className = "" }) {
     return (
-        <div className={`flex flex-wrap gap-4 text-[11px] text-slate-500 ${className}`}>
+        <div className={`flex flex-wrap gap-4 text-[11px] text-slate-500 dark:text-slate-400 ${className}`}>
             {PLAN_ORDER.map((plan) => (
                 <span key={plan} className="flex items-center gap-1.5">
                     <span className={`inline-block h-2 w-2 rounded-sm ${PLAN_DOT[plan]}`} />
@@ -93,13 +91,13 @@ export function BandStrip({ bands, value, label }) {
         <figure>
             <div className="relative pt-8">
                 <div
-                    className="absolute top-0 z-20 -translate-x-1/2 whitespace-nowrap rounded-sm bg-slate-900 px-2 py-1 text-[11px] font-medium tabular-nums text-white"
+                    className="absolute top-0 z-20 -translate-x-1/2 whitespace-nowrap rounded-sm bg-slate-900 dark:bg-indigo-600 px-2 py-1 text-[11px] font-medium tabular-nums text-white"
                     style={{ left: `${markerLeft}%` }}
                 >
                     {formatINR(value)}
                 </div>
                 <div
-                    className="absolute top-7 z-20 h-10 w-px -translate-x-1/2 bg-slate-900"
+                    className="absolute top-7 z-20 h-10 w-px -translate-x-1/2 bg-slate-900 dark:bg-indigo-600"
                     style={{ left: `${markerLeft}%` }}
                 />
                 <div className="flex h-10 w-full overflow-hidden rounded-sm">
@@ -108,7 +106,7 @@ export function BandStrip({ bands, value, label }) {
                             key={i}
                             className={`${PLAN_BG[b.plan]} ${
                                 b.contains_user ? "" : "opacity-35"
-                            } flex items-center justify-center border-r border-white/70 last:border-0`}
+                            } flex items-center justify-center border-r border-white/70 dark:border-slate-900/70 last:border-0`}
                             style={{ width: `${widthOf(b)}%` }}
                             title={`${b.label}: ${b.plan}`}
                         >
@@ -122,7 +120,7 @@ export function BandStrip({ bands, value, label }) {
                     {bands.slice(0, -1).map((b, i) => (
                         <span
                             key={i}
-                            className="absolute -translate-x-1/2 text-[10px] tabular-nums text-slate-400"
+                            className="absolute -translate-x-1/2 text-[10px] tabular-nums text-slate-400 dark:text-slate-500"
                             style={{ left: `${((b.high ?? 0) / maxEdge) * 100}%` }}
                         >
                             {shortINR(b.high)}
@@ -130,7 +128,7 @@ export function BandStrip({ bands, value, label }) {
                     ))}
                 </div>
             </div>
-            <figcaption className="mt-2 text-[11px] text-slate-500">
+            <figcaption className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
                 {label} — the thresholds this model splits on
             </figcaption>
         </figure>
@@ -142,20 +140,20 @@ export function PercentileRow({ item }) {
     return (
         <div>
             <div className="flex items-baseline justify-between">
-                <span className="text-sm text-slate-600">{item.label}</span>
-                <span className="text-sm font-semibold tabular-nums text-slate-900">{item.display}</span>
+                <span className="text-sm text-slate-600 dark:text-slate-400">{item.label}</span>
+                <span className="text-sm font-semibold tabular-nums text-slate-900 dark:text-slate-100">{item.display}</span>
             </div>
-            <div className="relative mt-2 h-1.5 rounded-sm bg-slate-100">
+            <div className="relative mt-2 h-1.5 rounded-sm bg-slate-100 dark:bg-slate-800">
                 <div
-                    className="absolute inset-y-0 left-0 rounded-sm bg-indigo-200"
+                    className="absolute inset-y-0 left-0 rounded-sm bg-indigo-200 dark:bg-indigo-900"
                     style={{ width: `${item.percentile}%` }}
                 />
                 <div
-                    className="absolute top-1/2 h-3.5 w-0.5 -translate-x-1/2 -translate-y-1/2 bg-slate-900"
+                    className="absolute top-1/2 h-3.5 w-0.5 -translate-x-1/2 -translate-y-1/2 bg-slate-900 dark:bg-indigo-600"
                     style={{ left: `${item.percentile}%` }}
                 />
             </div>
-            <p className="mt-1.5 text-[11px] tabular-nums text-slate-500">
+            <p className="mt-1.5 text-[11px] tabular-nums text-slate-500 dark:text-slate-400">
                 {Math.round(item.percentile)}th percentile · dataset median {item.median_display}
             </p>
         </div>

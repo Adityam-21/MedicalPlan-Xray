@@ -11,14 +11,20 @@ import { NEXT_QUESTIONS, PLAN_GUIDE, buildCautions, buildFitReasons } from "../.
 /** Report panel: hairline border, small-caps header, quiet body. */
 function Panel({ title, note, className = "", children, footer }) {
     return (
-        <section className={`flex flex-col rounded-xl border border-slate-200 bg-white ${className}`}>
-            <header className="flex items-baseline justify-between gap-3 border-b border-slate-100 px-5 py-3">
-                <h3 className="text-[11px] font-semibold uppercase tracking-[0.09em] text-slate-500">{title}</h3>
-                {note && <span className="text-[11px] tabular-nums text-slate-400">{note}</span>}
+        <section
+            className={`flex flex-col rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 ${className}`}
+        >
+            <header className="flex items-baseline justify-between gap-3 border-b border-slate-100 px-5 py-3 dark:border-slate-800">
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.09em] text-slate-500 dark:text-slate-400">
+                    {title}
+                </h3>
+                {note && (
+                    <span className="text-[11px] tabular-nums text-slate-400 dark:text-slate-500">{note}</span>
+                )}
             </header>
             <div className="flex-1 px-5 py-4">{children}</div>
             {footer && (
-                <footer className="border-t border-slate-100 px-5 py-3 text-[11px] leading-relaxed text-slate-500">
+                <footer className="border-t border-slate-100 px-5 py-3 text-[11px] leading-relaxed text-slate-500 dark:border-slate-800 dark:text-slate-400">
                     {footer}
                 </footer>
             )}
@@ -28,7 +34,7 @@ function Panel({ title, note, className = "", children, footer }) {
 
 function Placeholder({ children }) {
     return (
-        <div className="rounded-xl border border-dashed border-slate-300 bg-white/60 px-6 py-12 text-center">
+        <div className="rounded-xl border border-dashed border-slate-300 bg-white/60 px-6 py-12 text-center dark:border-slate-700 dark:bg-slate-900/60">
             {children}
         </div>
     );
@@ -37,25 +43,27 @@ function Placeholder({ children }) {
 function LoadingState() {
     return (
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-12" aria-live="polite" aria-busy="true">
-            <div className="h-48 animate-pulse rounded-xl bg-slate-100 lg:col-span-5" />
-            <div className="h-48 animate-pulse rounded-xl bg-slate-100 lg:col-span-7" />
-            <div className="h-40 animate-pulse rounded-xl bg-slate-100 lg:col-span-4" />
-            <div className="h-40 animate-pulse rounded-xl bg-slate-100 lg:col-span-4" />
-            <div className="h-40 animate-pulse rounded-xl bg-slate-100 lg:col-span-4" />
+            <div className="h-48 animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800 lg:col-span-5" />
+            <div className="h-48 animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800 lg:col-span-7" />
+            <div className="h-40 animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800 lg:col-span-4" />
+            <div className="h-40 animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800 lg:col-span-4" />
+            <div className="h-40 animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800 lg:col-span-4" />
         </div>
     );
 }
 
 function ErrorState({ message, onRetry }) {
     return (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 px-6 py-5">
-            <p className="text-sm font-semibold text-amber-900">Could not get a prediction</p>
-            <p className="mt-1 text-sm text-amber-800">{message}</p>
+        <div className="rounded-xl border border-amber-200 bg-amber-50 px-6 py-5 dark:border-amber-900 dark:bg-amber-950/40">
+            <p className="text-sm font-semibold text-amber-900 dark:text-amber-200">
+                Could not get a prediction
+            </p>
+            <p className="mt-1 text-sm text-amber-800 dark:text-amber-300">{message}</p>
             {onRetry && (
                 <button
                     type="button"
                     onClick={onRetry}
-                    className="mt-3 rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-sm font-medium text-amber-900 transition hover:bg-amber-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+                    className="mt-3 rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-sm font-medium text-amber-900 transition hover:bg-amber-100 dark:border-amber-800 dark:bg-transparent dark:text-amber-200 dark:hover:bg-amber-900/40"
                 >
                     Try again
                 </button>
@@ -66,12 +74,14 @@ function ErrorState({ message, onRetry }) {
 
 function Stat({ label, value, hint }) {
     return (
-        <div className="border-b border-slate-100 py-2 last:border-0">
+        <div className="border-b border-slate-100 py-2 last:border-0 dark:border-slate-800">
             <div className="flex items-baseline justify-between gap-3">
-                <span className="text-sm text-slate-600">{label}</span>
-                <span className="text-sm font-semibold tabular-nums text-slate-900">{value}</span>
+                <span className="text-sm text-slate-600 dark:text-slate-400">{label}</span>
+                <span className="text-sm font-semibold tabular-nums text-slate-900 dark:text-slate-100">
+                    {value}
+                </span>
             </div>
-            {hint && <p className="mt-0.5 text-[11px] text-slate-500">{hint}</p>}
+            {hint && <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">{hint}</p>}
         </div>
     );
 }
@@ -82,8 +92,8 @@ function PredictionResult({ prediction, isLoading, error, onRetry }) {
     if (!prediction) {
         return (
             <Placeholder>
-                <p className="text-sm font-medium text-slate-700">No profile scored yet</p>
-                <p className="mx-auto mt-1 max-w-md text-sm text-slate-500">
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">No profile scored yet</p>
+                <p className="mx-auto mt-1 max-w-md text-sm text-slate-500 dark:text-slate-400">
                     Fill in the details, or pick an example. You will get the recommended tier, the spending
                     thresholds behind it, and how the profile compares with the 980 training profiles.
                 </p>
@@ -102,12 +112,11 @@ function PredictionResult({ prediction, isLoading, error, onRetry }) {
 
     return (
         <div className="space-y-5">
-            {/* Report header */}
-            <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-slate-200 pb-3">
-                <h2 className="text-sm font-semibold uppercase tracking-[0.09em] text-slate-700">
+            <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-slate-200 pb-3 dark:border-slate-800">
+                <h2 className="text-sm font-semibold uppercase tracking-[0.09em] text-slate-700 dark:text-slate-300">
                     Plan recommendation report
                 </h2>
-                <p className="text-[11px] tabular-nums text-slate-500">
+                <p className="text-[11px] tabular-nums text-slate-500 dark:text-slate-400">
                     {metadata.model_type} · model v{metadata.model_version} · API v{metadata.api_version} ·{" "}
                     {generated}
                 </p>
@@ -118,13 +127,16 @@ function PredictionResult({ prediction, isLoading, error, onRetry }) {
                     {warnings.map((w, i) => (
                         <p
                             key={`w${i}`}
-                            className="rounded-lg border-l-2 border-amber-400 bg-amber-50 px-4 py-2.5 text-sm text-amber-900"
+                            className="rounded-lg border-l-2 border-amber-400 bg-amber-50 px-4 py-2.5 text-sm text-amber-900 dark:bg-amber-950/40 dark:text-amber-200"
                         >
                             {w}
                         </p>
                     ))}
                     {notices.map((n, i) => (
-                        <p key={`n${i}`} className="rounded-lg bg-slate-100 px-4 py-2.5 text-sm text-slate-600">
+                        <p
+                            key={`n${i}`}
+                            className="rounded-lg bg-slate-100 px-4 py-2.5 text-sm text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+                        >
                             {n}
                         </p>
                     ))}
@@ -132,42 +144,40 @@ function PredictionResult({ prediction, isLoading, error, onRetry }) {
             )}
 
             <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
-                {/* Recommendation */}
-                <Panel
-                    title="Recommendation"
-                    className="lg:col-span-5"
-                    footer={disclaimer}
-                >
-                    <p className="text-[11px] uppercase tracking-[0.09em] text-slate-500">Plan tier</p>
-                    <p className="mt-1 text-4xl font-bold tracking-tight text-slate-900">{plan}</p>
+                <Panel title="Recommendation" className="lg:col-span-5" footer={disclaimer}>
+                    <p className="text-[11px] uppercase tracking-[0.09em] text-slate-500 dark:text-slate-400">
+                        Plan tier
+                    </p>
+                    <p className="mt-1 text-4xl font-bold tracking-tight text-slate-900 dark:text-white">{plan}</p>
 
                     {close.is_close_call ? (
-                        <div className="mt-4 rounded-lg border-l-2 border-amber-400 bg-amber-50 px-4 py-3">
-                            <p className="text-sm font-semibold text-amber-900">
+                        <div className="mt-4 rounded-lg border-l-2 border-amber-400 bg-amber-50 px-4 py-3 dark:bg-amber-950/40">
+                            <p className="text-sm font-semibold text-amber-900 dark:text-amber-200">
                                 Close call — {plan} and {close.runner_up} are hard to separate
                             </p>
-                            <ul className="mt-1.5 space-y-1 text-sm text-amber-800">
+                            <ul className="mt-1.5 space-y-1 text-sm text-amber-800 dark:text-amber-300">
                                 {close.reasons.map((r, i) => (
                                     <li key={i}>{r}</li>
                                 ))}
                             </ul>
                         </div>
                     ) : (
-                        <p className="mt-3 text-sm text-slate-600">
+                        <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">
                             Clear margin: the next plan, {close.runner_up}, is{" "}
-                            <span className="font-semibold tabular-nums text-slate-900">{close.margin_pts}</span>{" "}
+                            <span className="font-semibold tabular-nums text-slate-900 dark:text-slate-100">
+                                {close.margin_pts}
+                            </span>{" "}
                             points behind.
                         </p>
                     )}
 
                     {insights.evidence?.text && (
-                        <p className="mt-4 border-t border-slate-100 pt-4 text-sm leading-relaxed text-slate-700">
+                        <p className="mt-4 border-t border-slate-100 pt-4 text-sm leading-relaxed text-slate-700 dark:border-slate-800 dark:text-slate-300">
                             {insights.evidence.text}
                         </p>
                     )}
                 </Panel>
 
-                {/* Why this plan */}
                 <Panel
                     title="Why this plan"
                     note={insights.spending_bands ? "single-feature rule" : undefined}
@@ -184,8 +194,11 @@ function PredictionResult({ prediction, isLoading, error, onRetry }) {
                     <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <ol className="space-y-2">
                             {insights.decision_path.map((step, i) => (
-                                <li key={i} className="flex gap-2.5 text-sm leading-snug text-slate-700">
-                                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-sm bg-slate-900 text-[10px] font-semibold text-white">
+                                <li
+                                    key={i}
+                                    className="flex gap-2.5 text-sm leading-snug text-slate-700 dark:text-slate-300"
+                                >
+                                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-sm bg-slate-900 text-[10px] font-semibold text-white dark:bg-indigo-600">
                                         {i + 1}
                                     </span>
                                     {step.text}
@@ -193,11 +206,11 @@ function PredictionResult({ prediction, isLoading, error, onRetry }) {
                             ))}
                         </ol>
                         {insights.boundaries.length > 0 && (
-                            <div className="rounded-lg bg-slate-50 px-4 py-3">
-                                <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-slate-500">
+                            <div className="rounded-lg bg-slate-50 px-4 py-3 dark:bg-slate-800/60">
+                                <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-slate-500 dark:text-slate-400">
                                     Distance to a different tier
                                 </p>
-                                <ul className="mt-2 space-y-1.5 text-sm leading-snug text-slate-700">
+                                <ul className="mt-2 space-y-1.5 text-sm leading-snug text-slate-700 dark:text-slate-300">
                                     {insights.boundaries.map((b, i) => (
                                         <li key={i}>{b.text}</li>
                                     ))}
@@ -207,7 +220,6 @@ function PredictionResult({ prediction, isLoading, error, onRetry }) {
                     </div>
                 </Panel>
 
-                {/* What this means for the household */}
                 <Panel
                     title="What this tier means for this household"
                     className="lg:col-span-12"
@@ -215,11 +227,13 @@ function PredictionResult({ prediction, isLoading, error, onRetry }) {
                 >
                     <div className="grid gap-8 lg:grid-cols-12">
                         <div className="lg:col-span-4">
-                            <p className="text-base font-semibold text-slate-900">
+                            <p className="text-base font-semibold text-slate-900 dark:text-slate-100">
                                 {plan} tier — {PLAN_GUIDE[plan].headline}
                             </p>
-                            <p className="mt-2 text-sm leading-relaxed text-slate-600">{PLAN_GUIDE[plan].what}</p>
-                            <p className="mt-3 rounded-lg bg-slate-50 px-4 py-3 text-sm leading-relaxed text-slate-700">
+                            <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                                {PLAN_GUIDE[plan].what}
+                            </p>
+                            <p className="mt-3 rounded-lg bg-slate-50 px-4 py-3 text-sm leading-relaxed text-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
                                 {PLAN_GUIDE[plan].watch}
                             </p>
                         </div>
@@ -229,10 +243,12 @@ function PredictionResult({ prediction, isLoading, error, onRetry }) {
                             <ul className="mt-3 space-y-3">
                                 {fitReasons.map((reason) => (
                                     <li key={reason.label}>
-                                        <p className="text-[11px] uppercase tracking-wide text-slate-400">
+                                        <p className="text-[11px] uppercase tracking-wide text-slate-400 dark:text-slate-500">
                                             {reason.label}
                                         </p>
-                                        <p className="mt-0.5 text-sm leading-relaxed text-slate-700">{reason.text}</p>
+                                        <p className="mt-0.5 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+                                            {reason.text}
+                                        </p>
                                     </li>
                                 ))}
                             </ul>
@@ -242,7 +258,10 @@ function PredictionResult({ prediction, isLoading, error, onRetry }) {
                             <p className="eyebrow">Read with care</p>
                             <ul className="mt-3 space-y-2">
                                 {cautions.map((caution, i) => (
-                                    <li key={i} className="flex gap-2.5 text-sm leading-snug text-slate-600">
+                                    <li
+                                        key={i}
+                                        className="flex gap-2.5 text-sm leading-snug text-slate-600 dark:text-slate-400"
+                                    >
                                         <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />
                                         {caution}
                                     </li>
@@ -251,8 +270,11 @@ function PredictionResult({ prediction, isLoading, error, onRetry }) {
                             <p className="eyebrow mt-5">Questions to ask next</p>
                             <ul className="mt-3 space-y-2">
                                 {NEXT_QUESTIONS.map((q) => (
-                                    <li key={q} className="flex gap-2.5 text-sm leading-snug text-slate-600">
-                                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-300" />
+                                    <li
+                                        key={q}
+                                        className="flex gap-2.5 text-sm leading-snug text-slate-600 dark:text-slate-400"
+                                    >
+                                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-300 dark:bg-slate-600" />
                                         {q}
                                     </li>
                                 ))}
@@ -261,7 +283,6 @@ function PredictionResult({ prediction, isLoading, error, onRetry }) {
                     </div>
                 </Panel>
 
-                {/* Probabilities */}
                 <Panel
                     title="Plan likelihood"
                     className="lg:col-span-4"
@@ -270,7 +291,6 @@ function PredictionResult({ prediction, isLoading, error, onRetry }) {
                     <ProbabilityBars probabilities={result.probabilities} recommended={plan} />
                 </Panel>
 
-                {/* Percentiles */}
                 <Panel
                     title="This profile vs the dataset"
                     note={`n = ${metadata.training_rows}`}
@@ -283,17 +303,18 @@ function PredictionResult({ prediction, isLoading, error, onRetry }) {
                     </div>
                 </Panel>
 
-                {/* Peers */}
                 {insights.peer_group && (
                     <Panel
                         title="Comparable profiles"
                         note={`n = ${insights.peer_group.count}`}
                         className="lg:col-span-4"
                     >
-                        <p className="text-sm leading-relaxed text-slate-700">{insights.peer_group.text}</p>
+                        <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+                            {insights.peer_group.text}
+                        </p>
                         <div className="mt-4">
                             <PlanMixBar mix={insights.peer_group.plan_mix} height="h-3" />
-                            <p className="mt-2 text-[11px] tabular-nums text-slate-500">
+                            <p className="mt-2 text-[11px] tabular-nums text-slate-500 dark:text-slate-400">
                                 {Object.entries(insights.peer_group.plan_mix)
                                     .map(([p, v]) => `${p} ${pct(v, 0)}`)
                                     .join("  ·  ")}
@@ -302,7 +323,6 @@ function PredictionResult({ prediction, isLoading, error, onRetry }) {
                     </Panel>
                 )}
 
-                {/* Factor context */}
                 <Panel
                     title="Dataset patterns by detail"
                     className="lg:col-span-7"
@@ -312,25 +332,28 @@ function PredictionResult({ prediction, isLoading, error, onRetry }) {
                         {insights.factors.map((f) => (
                             <div key={f.factor}>
                                 <div className="flex items-baseline justify-between gap-2">
-                                    <span className="text-sm text-slate-600">
+                                    <span className="text-sm text-slate-600 dark:text-slate-400">
                                         {f.label}:{" "}
-                                        <span className="font-semibold text-slate-900">{f.your_group}</span>
+                                        <span className="font-semibold text-slate-900 dark:text-slate-100">
+                                            {f.your_group}
+                                        </span>
                                     </span>
-                                    <span className="text-[11px] tabular-nums text-slate-400">n = {f.count}</span>
+                                    <span className="text-[11px] tabular-nums text-slate-400 dark:text-slate-500">
+                                        n = {f.count}
+                                    </span>
                                 </div>
                                 <div className="mt-1.5">
                                     <PlanMixBar mix={f.plan_mix} />
                                 </div>
-                                <p className="mt-1 text-[11px] tabular-nums text-slate-500">
+                                <p className="mt-1 text-[11px] tabular-nums text-slate-500 dark:text-slate-400">
                                     median spend {f.median_display}
                                 </p>
                             </div>
                         ))}
                     </div>
-                    <PlanMixLegend className="mt-5 border-t border-slate-100 pt-4" />
+                    <PlanMixLegend className="mt-5 border-t border-slate-100 pt-4 dark:border-slate-800" />
                 </Panel>
 
-                {/* Model performance */}
                 <Panel
                     title="Model performance"
                     note={`${metadata.cv_folds}-fold CV`}
