@@ -5,10 +5,16 @@ const API = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  timeout: 15000,
 });
 
 export async function predictMedicalPlan(data) {
   const response = await API.post("/predict", data);
+  return response.data;
+}
+
+export async function getModelInfo() {
+  const response = await API.get("/model");
   return response.data;
 }
 

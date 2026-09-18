@@ -9,6 +9,9 @@ const VARIANTS = {
 
     feature:
         "bg-white border border-gray-100 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl",
+
+    // No hover movement: for long content panels where a lift is distracting.
+    plain: "bg-white border border-gray-200 shadow-sm",
 };
 
 const PADDING = {

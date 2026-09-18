@@ -2,78 +2,109 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ------------------------------------------------ */
-/* Fade In Animation */
-/* ------------------------------------------------ */
+/* ---------------------------------------------------------------- */
+/* Design tokens                                                     */
+/* One slate/indigo scale across every page. Plan tiers use a        */
+/* sequential scale (pale to deep), never a traffic light.           */
+/* ---------------------------------------------------------------- */
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
+:root {
+  --surface: #f8fafc;
+  --surface-raised: #ffffff;
+  --line: #e2e8f0;
+  --line-soft: #f1f5f9;
+  --text: #0f172a;
+  --text-muted: #475569;
+  --text-faint: #94a3b8;
+  --accent: #4338ca;
+  --accent-soft: #eef2ff;
+  --plan-low: #7dd3fc;
+  --plan-medium: #818cf8;
+  --plan-high: #4338ca;
+  --warn-line: #f59e0b;
+  --warn-bg: #fffbeb;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
   }
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  body {
+    background-color: var(--surface);
+    color: var(--text);
+  }
+
+  /* Figures line up in columns wherever numbers are shown. */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Visible keyboard focus everywhere, without a permanent outline box. */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--accent-soft);
   }
 }
 
-/* ------------------------------------------------ */
-/* Floating Animation */
-/* ------------------------------------------------ */
-
-@keyframes float {
-
-  0%,
-  100% {
-    transform: translateY(0px);
+@layer components {
+  /* Small-caps section label used on every page. */
+  .eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-label text-slate-500;
   }
 
-  50% {
-    transform: translateY(-12px);
+  /* Report panel: hairline border, no shadow theatre. */
+  .panel {
+    @apply rounded-xl border border-slate-200 bg-white;
   }
 
+  .panel-header {
+    @apply flex items-baseline justify-between gap-3 border-b border-slate-100 px-5 py-3;
+  }
+
+  .panel-body {
+    @apply px-5 py-4;
+  }
+
+  .rule-note {
+    @apply rounded-lg border-l-2 border-amber-400 bg-amber-50 px-4 py-2.5 text-sm text-amber-900;
+  }
 }
 
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-.animate-float-delay {
-  animation: float 6s ease-in-out infinite;
-  animation-delay: 2s;
-}
-
-.animate-float-delay-2 {
-  animation: float 6s ease-in-out infinite;
-  animation-delay: 4s;
-}
-
-/* ------------------------------------------------ */
-/* Smooth Scrolling */
-/* ------------------------------------------------ */
-
-html {
-  scroll-behavior: smooth;
-}
-
-/* ------------------------------------------------ */
-/* Custom Scrollbar */
-/* ------------------------------------------------ */
-
+/* Quiet scrollbar that matches the palette. */
 ::-webkit-scrollbar {
   width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f8fafc;
+  background: #f1f5f9;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(#2563eb, #06b6d4);
+  background: #cbd5e1;
   border-radius: 999px;
+  border: 2px solid #f1f5f9;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(#1d4ed8, #0891b2);
+  background: #94a3b8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
