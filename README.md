@@ -4,7 +4,8 @@ An insurance plan-tier recommender that shows its reasoning: a scikit-learn deci
 behind a FastAPI service and a React report UI, trained on 980 synthetic household profiles.
 
 **Every number in this README comes from `python -m src.train evaluate` in this repository.**
-Raw output lives in [`reports/cv_results.json`](reports/cv_results.json).
+Full results: [`reports/cv_results.md`](reports/cv_results.md) (rendered table) and
+[`reports/cv_results.json`](reports/cv_results.json) (raw, with per-fold scores).
 
 | | |
 |---|---|
