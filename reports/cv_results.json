@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-17T15:22:50+00:00",
+  "generated_at": "2026-09-24T10:58:48+00:00",
   "cv": {
     "folds": 5,
     "stratified": true,
@@ -71,7 +71,7 @@
     {
       "model": "tree_tuned",
       "description": "Decision tree, depth and leaf size tuned on training folds",
-      "seconds": 5.4,
+      "seconds": 7.6,
       "macro_f1": {
         "mean": 0.8135,
         "std": 0.0208,
@@ -109,7 +109,7 @@
     {
       "model": "xgb_tuned",
       "description": "XGBoost tuned on training folds (30 trials)",
-      "seconds": 10.9,
+      "seconds": 17.7,
       "macro_f1": {
         "mean": 0.808,
         "std": 0.0277,
@@ -141,6 +141,44 @@
           0.8045,
           0.8504,
           0.7579
+        ]
+      }
+    },
+    {
+      "model": "tree_d2_spending_only",
+      "description": "Decision tree depth 2, annual spending only",
+      "seconds": 0.1,
+      "macro_f1": {
+        "mean": 0.8076,
+        "std": 0.031,
+        "folds": [
+          0.7984,
+          0.7708,
+          0.8007,
+          0.865,
+          0.8032
+        ]
+      },
+      "accuracy": {
+        "mean": 0.8276,
+        "std": 0.0247,
+        "folds": [
+          0.8418,
+          0.7959,
+          0.8163,
+          0.8673,
+          0.8163
+        ]
+      },
+      "balanced_acc": {
+        "mean": 0.7882,
+        "std": 0.034,
+        "folds": [
+          0.7807,
+          0.7442,
+          0.7937,
+          0.8479,
+          0.7744
         ]
       }
     },
@@ -261,7 +299,7 @@
     {
       "model": "xgb_tuned_smote",
       "description": "XGBoost + SMOTE tuned on training folds (30 trials)",
-      "seconds": 13.0,
+      "seconds": 18.1,
       "macro_f1": {
         "mean": 0.8008,
         "std": 0.0371,
@@ -375,7 +413,7 @@
     {
       "model": "xgb_default_smote",
       "description": "XGBoost defaults + SMOTE",
-      "seconds": 3.5,
+      "seconds": 3.6,
       "macro_f1": {
         "mean": 0.7926,
         "std": 0.0316,
@@ -413,7 +451,7 @@
     {
       "model": "xgb_default",
       "description": "XGBoost defaults (depth 5, 100 trees)",
-      "seconds": 2.1,
+      "seconds": 2.6,
       "macro_f1": {
         "mean": 0.7918,
         "std": 0.033,
@@ -451,7 +489,7 @@
     {
       "model": "legacy_deployed",
       "description": "Currently deployed config (tuned on test set, SMOTE, gender) re-scored honestly",
-      "seconds": 0.8,
+      "seconds": 1.1,
       "macro_f1": {
         "mean": 0.7895,
         "std": 0.0329,
@@ -559,6 +597,44 @@
           0.7485,
           0.7713,
           0.7147
+        ]
+      }
+    },
+    {
+      "model": "rf_without_spending",
+      "description": "Random forest on every input EXCEPT spending-derived columns",
+      "seconds": 3.4,
+      "macro_f1": {
+        "mean": 0.7187,
+        "std": 0.0287,
+        "folds": [
+          0.7131,
+          0.7556,
+          0.6929,
+          0.7478,
+          0.6839
+        ]
+      },
+      "accuracy": {
+        "mean": 0.751,
+        "std": 0.0156,
+        "folds": [
+          0.7449,
+          0.7755,
+          0.7296,
+          0.7602,
+          0.7449
+        ]
+      },
+      "balanced_acc": {
+        "mean": 0.706,
+        "std": 0.0209,
+        "folds": [
+          0.7041,
+          0.7347,
+          0.6915,
+          0.7228,
+          0.6768
         ]
       }
     },

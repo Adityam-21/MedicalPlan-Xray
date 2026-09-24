@@ -1,11 +1,14 @@
 # MedicalPlan-Xray
 
+[![CI](https://github.com/Adityam-21/MedicalPlan-Xray/actions/workflows/ci.yml/badge.svg)](https://github.com/Adityam-21/MedicalPlan-Xray/actions/workflows/ci.yml)
+
 An insurance plan-tier recommender that shows its reasoning: a scikit-learn decision tree
 behind a FastAPI service and a React report UI, trained on 980 synthetic household profiles.
 
 **Every number in this README comes from `python -m src.train evaluate` in this repository.**
 Full results: [`reports/cv_results.md`](reports/cv_results.md) (rendered table) and
 [`reports/cv_results.json`](reports/cv_results.json) (raw, with per-fold scores).
+The [model card](docs/model_card.md) has the confusion matrix, per-tier scores and fairness notes.
 
 | | |
 |---|---|
@@ -50,7 +53,7 @@ separate pickle that could drift.
 They confirmed the JSON had the right keys and that probabilities summed to 1. A completely
 scrambled label mapping would have passed.
 
-**Fix:** 80+ tests covering predicted tiers on known rows, probability ordering, threshold
+**Fix:** 80+ tests, run on every push by GitHub Actions, covering predicted tiers on known rows, probability ordering, threshold
 behaviour, input validation, deprecated-field handling, and every insight panel.
 
 ### 4. Complexity was not earning its place
@@ -61,11 +64,13 @@ Scored on identical folds, the entire candidate set looks like this:
 |---|---|---|
 | **Decision tree, depth tuned (shipped)** | **0.814 ± 0.021** | Depth 2, one feature |
 | Decision tree, depth 3 | 0.815 ± 0.017 | Same score; depth chosen after seeing results |
+| Decision tree, depth 2, **spending only** | 0.808 ± 0.031 | One input |
 | XGBoost, tuned | 0.808 ± 0.028 | All features, nested tuning |
 | XGBoost, tuned + SMOTE | 0.801 ± 0.037 | Oversampling did not help |
 | XGBoost, defaults | 0.792 ± 0.033 | |
 | Previously deployed config | 0.789 ± 0.033 | Re-scored without the leak |
 | Logistic regression | 0.726 ± 0.026 | Linear baseline |
+| Random forest, every input **except** spending | 0.719 ± 0.029 | What the other columns carry alone |
 | Majority class | 0.199 ± 0.001 | Floor |
 
 **Fix:** ship the tree. Every gap above is smaller than the fold-to-fold variation, so the boosted
@@ -93,8 +98,8 @@ publishes the model's weakest recall on the results page.
 
 ## Why the simple model won
 
-Annual household spending alone reaches 0.808 macro-F1. Everything else combined, with spending
-removed, reaches 0.72. Spending correlates with age (0.61), smoking (0.57) and family size (0.39),
+Annual household spending alone reaches 0.808 macro-F1. Every other input combined, with spending
+removed, reaches 0.719. Spending correlates with age (0.61), smoking (0.57) and family size (0.39),
 so it already carries most of what the other columns say.
 
 The shipped model is small enough to print in full:
@@ -127,7 +132,8 @@ backend/    FastAPI. app/features.py is the single source of truth for model inp
 src/        train.py: nested-CV model comparison and the fit that produces the artifacts.
 tests/      Value-level model tests, API tests, insight tests.
 reports/    cv_results.json / .md — the numbers quoted above.
-docs/       model_card.md
+docs/       model_card.md — evaluation, confusion matrix, fairness, limitations
+.github/    CI: backend tests and frontend build on every push
 ```
 
 Training and inference import the **same** feature module, so the two cannot drift apart.

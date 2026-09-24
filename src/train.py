@@ -220,6 +220,17 @@ def build(name: str, n_iter: int):
             scoring="f1_macro", cv=inner_cv(), random_state=SEED, n_jobs=-1,
         )
         return search, f"XGBoost + SMOTE tuned on training folds ({n_iter} trials)", True
+    if name == "tree_d2_spending_only":
+        est = make_pipeline(tree(2), ["annual_expenditure_inr"], [])
+        return est, "Decision tree depth 2, annual spending only", False
+    if name == "rf_without_spending":
+        from sklearn.ensemble import RandomForestClassifier
+
+        nums = ["age", "total_income_inr", "family_members", "is_smoker", "income_per_member"]
+        est = make_pipeline(
+            RandomForestClassifier(n_estimators=300, random_state=SEED, n_jobs=-1), nums, CATEGORICAL
+        )
+        return est, "Random forest on every input EXCEPT spending-derived columns", False
     if name == "legacy_deployed":
         est = make_pipeline(xgb(**LEGACY_XGB), *columns(True, True), scale=True, smote=True)
         return est, "Currently deployed config (tuned on test set, SMOTE, gender) re-scored honestly", True
@@ -233,6 +244,8 @@ CANDIDATES = [
     "tree_d4_no_engineered",
     "tree_d4_with_gender",
     "tree_tuned",
+    "tree_d2_spending_only",
+    "rf_without_spending",
     "xgb_default",
     "xgb_default_smote",
     "xgb_default_with_gender",
