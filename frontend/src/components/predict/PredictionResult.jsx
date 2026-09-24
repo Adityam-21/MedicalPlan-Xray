@@ -48,6 +48,10 @@ function LoadingState() {
             <div className="h-40 animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800 lg:col-span-4" />
             <div className="h-40 animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800 lg:col-span-4" />
             <div className="h-40 animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800 lg:col-span-4" />
+            <p className="text-sm text-slate-500 dark:text-slate-400 lg:col-span-12">
+                Scoring the profile… the first request of the day can take up to a minute while the
+                free-tier backend wakes up.
+            </p>
         </div>
     );
 }

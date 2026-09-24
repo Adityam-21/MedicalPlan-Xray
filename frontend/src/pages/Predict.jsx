@@ -4,6 +4,7 @@ import PredictionForm from "../components/predict/PredictionForm";
 import PredictionResult from "../components/predict/PredictionResult";
 import PageContainer from "../components/layout/PageContainer";
 import { formatINR } from "../utils/format";
+import { wakeBackend } from "../services/api";
 
 const STRIP_FIELDS = [
     ["age", "Age", (v) => v],
@@ -57,6 +58,11 @@ function Predict() {
     const [error, setError] = useState(null);
     const [showForm, setShowForm] = useState(true);
     const reportRef = useRef(null);
+
+    // The free-tier backend sleeps when idle; start waking it on page load.
+    useEffect(() => {
+        wakeBackend();
+    }, []);
 
     useEffect(() => {
         if (prediction || error) {

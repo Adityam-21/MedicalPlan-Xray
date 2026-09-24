@@ -80,7 +80,7 @@ function PredictionForm({ onStart, onResult, onError }) {
                 error?.response?.data?.detail ??
                 (error?.response
                     ? `Server responded with ${error.response.status}.`
-                    : "Could not reach the API. Is the backend running?");
+                    : "Could not reach the API. The free-tier backend may be waking up — wait a few seconds and try again.");
             onError(String(detail));
         }
     };
