@@ -146,7 +146,7 @@ Requires Python 3.12+ and Node 20+.
 # Backend
 python -m venv .venv
 .venv\Scripts\Activate.ps1          # PowerShell; use source .venv/bin/activate on macOS/Linux
-pip install -r backend/requirements.txt
+pip install -r requirements-dev.txt   # backend/requirements.txt alone = runtime only
 cd backend
 python -m uvicorn app.main:app --port 8000
 ```

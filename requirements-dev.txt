@@ -1,0 +1,10 @@
+# Everything in the runtime image, plus training and test tooling.
+# Install with:  pip install -r requirements-dev.txt
+-r backend/requirements.txt
+
+pytest==8.4.2
+httpx==0.28.1
+
+# Needed only by src/train.py to score the XGBoost and SMOTE candidates.
+xgboost==3.2.0
+imbalanced-learn==0.14.2
