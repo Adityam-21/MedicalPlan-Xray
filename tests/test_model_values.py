@@ -104,3 +104,16 @@ def test_model_summary_reports_cv_scores():
     assert 0 < s["cv_macro_f1"]["mean"] <= 1
     assert set(s["cv_recall_by_plan"]) == PLANS
     assert s["training_rows"] == 980
+
+
+def test_spending_above_income_produces_warning():
+    _, _, customer = KNOWN_CASES[0]
+    impossible = {**customer, "total_income_inr": 100000, "annual_expenditure_inr": 485000}
+    warnings = predict_medical_plan(impossible)["warnings"]
+    assert any("higher than annual income" in w for w in warnings)
+
+
+def test_normal_spending_produces_no_income_warning():
+    for _, _, customer in KNOWN_CASES:
+        warnings = predict_medical_plan(customer)["warnings"]
+        assert not any("higher than annual income" in w for w in warnings)

@@ -64,28 +64,18 @@ def range_warnings(customer_data: dict) -> list[str]:
                 f"{label} is outside training range ({low:,}–{high:,}); "
                 "treat this prediction with extra caution."
             )
+
+    # Every training profile spends less than it earns, so the reverse puts the
+    # profile outside anything the model has seen, whatever the two values are.
+    income = customer_data.get("total_income_inr")
+    spending = customer_data.get("annual_expenditure_inr")
+    if income and spending and spending > income:
+        warnings.append(
+            "Annual spending is higher than annual income; check the figures, "
+            "since no training profile spends more than it earns."
+        )
+
     return warnings
-
-
-# ----------------------------------------------------------------------------
-# Salary bracket (derived from income, not asked)
-# ----------------------------------------------------------------------------
-# These cut-offs reproduce the dataset's salary_bracket for 979 of 980 rows.
-
-SALARY_BRACKETS = [
-    # (upper bound exclusive, bracket, human label)
-    (500_000, "Tier-1", "Tier-1 (below ₹5L a year)"),
-    (1_200_000, "Tier-2", "Tier-2 (₹5L–₹12L a year)"),
-    (2_500_000, "Tier-3", "Tier-3 (₹12L–₹25L a year)"),
-    (float("inf"), "Tier-4", "Tier-4 (₹25L a year and above)"),
-]
-
-
-def derive_salary_bracket(total_income_inr: float) -> tuple[str, str]:
-    for upper, bracket, label in SALARY_BRACKETS:
-        if total_income_inr < upper:
-            return bracket, label
-    raise ValueError("unreachable")
 
 
 # ----------------------------------------------------------------------------
@@ -183,6 +173,27 @@ def format_value(feature: str, value) -> str:
     if isinstance(value, float) and value.is_integer():
         return str(int(value))
     return str(value)
+
+
+# ----------------------------------------------------------------------------
+# Salary bracket (derived from income, not asked)
+# ----------------------------------------------------------------------------
+# These cut-offs reproduce the dataset's salary_bracket for 979 of 980 rows.
+
+SALARY_BRACKETS = [
+    # (upper bound exclusive, bracket, human label)
+    (500_000, "Tier-1", "Tier-1 (below ₹5L a year)"),
+    (1_200_000, "Tier-2", "Tier-2 (₹5L–₹12L a year)"),
+    (2_500_000, "Tier-3", "Tier-3 (₹12L–₹25L a year)"),
+    (float("inf"), "Tier-4", "Tier-4 (₹25L a year and above)"),
+]
+
+
+def derive_salary_bracket(total_income_inr: float) -> tuple[str, str]:
+    for upper, bracket, label in SALARY_BRACKETS:
+        if total_income_inr < upper:
+            return bracket, label
+    raise ValueError("unreachable")
 
 
 # ----------------------------------------------------------------------------

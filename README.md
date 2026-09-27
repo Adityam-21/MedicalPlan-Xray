@@ -5,6 +5,14 @@
 An insurance plan-tier recommender that shows its reasoning: a scikit-learn decision tree
 behind a FastAPI service and a React report UI, trained on 980 synthetic household profiles.
 
+**[Live demo](https://medical-plan-xray.vercel.app)** ·
+[API](https://medicalplan-xray-api.onrender.com/model) ·
+[Model card](docs/model_card.md) ·
+[v2.0.0 release notes](docs/releases/v2.0.0.md)
+
+> The API runs on a free instance that sleeps after 15 minutes of inactivity, so the first
+> request can take about a minute. The UI says so while it waits.
+
 **Every number in this README comes from `python -m src.train evaluate` in this repository.**
 Full results: [`reports/cv_results.md`](reports/cv_results.md) (rendered table) and
 [`reports/cv_results.json`](reports/cv_results.json) (raw, with per-fold scores).
@@ -132,7 +140,7 @@ backend/    FastAPI. app/features.py is the single source of truth for model inp
 src/        train.py: nested-CV model comparison and the fit that produces the artifacts.
 tests/      Value-level model tests, API tests, insight tests.
 reports/    cv_results.json / .md — the numbers quoted above.
-docs/       model_card.md — evaluation, confusion matrix, fairness, limitations
+docs/       model_card.md and releases/ — evaluation, fairness, limitations, release notes
 .github/    CI: backend tests and frontend build on every push
 ```
 
